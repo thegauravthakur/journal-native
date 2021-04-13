@@ -15,7 +15,6 @@ export function AddTaskInput({}) {
     <View style={Style.container}>
       {show && (
         <TextInput
-          value={title}
           onChangeText={e => setTitle(e)}
           multiline={true}
           style={{ ...Style.titleInput, height: titleHeight }}
@@ -37,7 +36,6 @@ export function AddTaskInput({}) {
         />
       )}
       <TextInput
-        value={description}
         onChangeText={e => setDescription(e)}
         style={{ ...Style.descriptionInput, height: descriptionHeight }}
         onContentSizeChange={e =>
@@ -71,6 +69,7 @@ const Style = StyleSheet.create({
     marginBottom: 20,
   },
   titleInput: {
+    fontWeight: 'bold',
     color: 'black',
     padding: 0,
     fontSize: 18,

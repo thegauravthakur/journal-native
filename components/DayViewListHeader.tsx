@@ -26,7 +26,12 @@ export function DayViewListHeader({ setData, data }) {
         {format(new Date(), 'LLLL d, yyyy')}
       </Text>
       <View>
-        <View pointerEvents={'box-none'} style={Style.container}>
+        <View
+          pointerEvents={'box-none'}
+          style={{
+            ...Style.container,
+            ...(data.length === 0 && { borderLeftWidth: 0 }),
+          }}>
           <AddTaskInput />
         </View>
         <Ripple onPress={onClickHandler} rippleCentered style={Style.ripple}>

@@ -54,7 +54,12 @@ export function DayView() {
         )}
         data={data}
         renderItem={({ item, index }) => (
-          <DayViewEvent isEnd={index === data.length - 1} item={item} />
+          <DayViewEvent
+            isEnd={index === data.length - 1}
+            item={item}
+            setData={setData}
+            index={index}
+          />
         )}
       />
     </View>

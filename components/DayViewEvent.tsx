@@ -3,8 +3,10 @@ import { StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import Ripple from 'react-native-material-ripple';
 import { format } from 'date-fns';
+import { useNavigation } from '@react-navigation/native';
 
-export function DayViewEvent({ item, isEnd }) {
+export function DayViewEvent({ item, isEnd, index, setData }) {
+  const navigation = useNavigation();
   const { title, description, time } = item;
   return (
     <View>
@@ -20,7 +22,17 @@ export function DayViewEvent({ item, isEnd }) {
         )}
         <Text style={Style.date}>{format(new Date(time), 'do LLL, yyyy')}</Text>
       </View>
-      <Ripple rippleCentered style={Style.ripple}>
+      <Ripple
+        onPress={() =>
+          navigation.navigate('TaskView', {
+            title,
+            description,
+            setData: setData,
+            index: index,
+          })
+        }
+        rippleCentered
+        style={Style.ripple}>
         <Icon style={Style.icon} name='edit' size={20} color='#8E93A2' />
       </Ripple>
     </View>

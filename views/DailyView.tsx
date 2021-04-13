@@ -99,9 +99,7 @@ export function DailyView(): React.ReactElement {
         data={data}
         showTime={false}
         lineColor='#BDBDBD'
-        renderDetail={rowData => (
-          <RenderDetail rowData={rowData} setData={setData} />
-        )}
+        renderDetail={rowData => <RenderDetail rowData={rowData} />}
         innerCircle={'icon'}
       />
     </View>
