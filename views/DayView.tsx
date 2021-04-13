@@ -68,6 +68,6 @@ export function DayView() {
 
 const Style = StyleSheet.create({
   list: {
-    marginTop: 12,
+    paddingTop: 12,
   },
 });
