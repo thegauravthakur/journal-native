@@ -1,8 +1,18 @@
 import React, { useState } from 'react';
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  Image,
+  ImageSourcePropType,
+  ImageURISource,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ripple from 'react-native-material-ripple';
+import { RecentImagePicker } from '../components/RecentImagePicker';
 
 export function TaskView({ route }) {
   const [titleHeight, setTitleHeight] = useState(42);
@@ -10,6 +20,7 @@ export function TaskView({ route }) {
   const { title, description, index, setData } = route.params;
   const [inputTitle, setInputTitle] = useState(title);
   const [inputDescription, setInputDescription] = useState(description);
+  const [images, setImages] = useState<Array<ImageSourcePropType>>([]);
   const navigation = useNavigation();
   navigation.setOptions({
     headerRight: () => (
@@ -31,57 +42,86 @@ export function TaskView({ route }) {
       </Ripple>
     ),
   });
+
+  const onDeleteHandler = () => {
+    setData(data => {
+      const temp = [...data];
+      temp.splice(index, 1);
+      return temp;
+    });
+    navigation.goBack();
+  };
+
   return (
-    <View>
-      <TextInput
-        onChangeText={e => setInputTitle(e)}
-        defaultValue={title}
-        multiline={true}
-        style={{ ...Style.titleInput, height: titleHeight }}
-        onContentSizeChange={e =>
-          setTitleHeight(e.nativeEvent.contentSize.height)
-        }
-        placeholder={'Title'}
-        // style={Style.titleInput}
-        placeholderTextColor={'black'}
-      />
-      <TextInput
-        defaultValue={description}
-        multiline
-        onChangeText={e => setInputDescription(e)}
-        style={{ ...Style.descriptionInput, height: descriptionHeight }}
-        onContentSizeChange={e =>
-          setDescriptionHeight(e.nativeEvent.contentSize.height)
-        }
-        placeholder={'Take a note'}
-        placeholderTextColor={'black'}
-      />
+    <View style={Style.container}>
+      <ScrollView>
+        <TextInput
+          onChangeText={e => setInputTitle(e)}
+          defaultValue={title}
+          multiline={true}
+          style={{ ...Style.titleInput, height: titleHeight }}
+          onContentSizeChange={e =>
+            setTitleHeight(e.nativeEvent.contentSize.height)
+          }
+          placeholder={'Title'}
+          // style={Style.titleInput}
+          placeholderTextColor={'black'}
+        />
+        <TextInput
+          defaultValue={description}
+          multiline
+          onChangeText={e => setInputDescription(e)}
+          style={{ ...Style.descriptionInput, height: descriptionHeight }}
+          onContentSizeChange={e =>
+            setDescriptionHeight(e.nativeEvent.contentSize.height)
+          }
+          placeholder={'Take a note'}
+          placeholderTextColor={'black'}
+        />
+        {images.length === 1 && (
+          <Image style={{ width: '100%', height: '100%' }} source={images[0]} />
+        )}
+      </ScrollView>
+      <View>
+        <RecentImagePicker setImage={setImages} />
+        <View style={Style.footerWrapper}>
+          <View style={Style.footerFirstHalf}>
+            <Icon style={Style.gifIcon} size={18} name={'gif'} />
+            <Icon style={Style.pictureIcon} size={27} name={'photo'} />
+          </View>
+          <Icon
+            onPress={onDeleteHandler}
+            style={Style.deleteIcon}
+            size={25}
+            name={'delete'}
+          />
+        </View>
+      </View>
     </View>
   );
 }
 
 const Style = StyleSheet.create({
   container: {
-    borderWidth: 1,
-    marginHorizontal: 5,
-    borderRadius: 10,
-    marginTop: -7,
-    marginBottom: 20,
+    flex: 1,
+    justifyContent: 'space-between',
   },
   titleInput: {
     fontWeight: 'bold',
     color: 'black',
     padding: 0,
-    fontSize: 18,
+    fontSize: 19,
     paddingVertical: 10,
     paddingHorizontal: 5,
+    fontFamily: 'segoeui',
   },
   descriptionInput: {
     color: 'black',
     padding: 0,
     fontSize: 16,
-    paddingVertical: 10,
     paddingHorizontal: 5,
+    lineHeight: 25,
+    fontFamily: 'segoeui',
   },
   icon: {
     borderRadius: 100,
@@ -99,4 +139,24 @@ const Style = StyleSheet.create({
     // color: 'white',
     color: 'black',
   },
+  footerWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+  },
+  footerFirstHalf: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  deleteIcon: {
+    borderLeftWidth: 1,
+    paddingLeft: 10,
+  },
+  gifIcon: {
+    borderWidth: 1,
+    marginRight: 20,
+  },
+  pictureIcon: {},
 });
