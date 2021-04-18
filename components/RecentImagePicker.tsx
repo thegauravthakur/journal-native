@@ -33,6 +33,7 @@ export function RecentImagePicker({ setImage }) {
         {photos.map((p, i) => {
           return (
             <TouchableHighlight
+              key={p.node.image.uri}
               style={{ ...Style.image }}
               onPress={() =>
                 setImage(images => {

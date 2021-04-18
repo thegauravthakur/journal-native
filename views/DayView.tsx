@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { DayViewEvent } from '../components/DayViewEvent';
 import { AddTaskInput } from '../components/AddTaskInput';
 import { DayViewListHeader } from '../components/DayViewListHeader';
-import Icon from 'react-native-vector-icons/Feather';
+// import { request, PERMISSIONS } from 'react-native-permissions';
 
 export function DayView() {
   const [data, setData] = useState([
@@ -44,6 +44,7 @@ export function DayView() {
         'lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
     },
   ]);
+
   return (
     <View style={{ flex: 1 }}>
       <FlatList

@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import {
-  Image,
   ImageSourcePropType,
-  ImageURISource,
+  PermissionsAndroid,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,6 +12,8 @@ import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ripple from 'react-native-material-ripple';
 import { RecentImagePicker } from '../components/RecentImagePicker';
+import { SelectedImages } from '../components/SelectedImages';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 
 export function TaskView({ route }) {
   const [titleHeight, setTitleHeight] = useState(42);
@@ -64,7 +65,6 @@ export function TaskView({ route }) {
             setTitleHeight(e.nativeEvent.contentSize.height)
           }
           placeholder={'Title'}
-          // style={Style.titleInput}
           placeholderTextColor={'black'}
         />
         <TextInput
@@ -78,16 +78,25 @@ export function TaskView({ route }) {
           placeholder={'Take a note'}
           placeholderTextColor={'black'}
         />
-        {images.length === 1 && (
-          <Image style={{ width: '100%', height: '100%' }} source={images[0]} />
-        )}
+        <SelectedImages images={images} setImages={setImages} />
       </ScrollView>
       <View>
-        <RecentImagePicker setImage={setImages} />
+        {images.length === 0 && <RecentImagePicker setImage={setImages} />}
         <View style={Style.footerWrapper}>
           <View style={Style.footerFirstHalf}>
             <Icon style={Style.gifIcon} size={18} name={'gif'} />
-            <Icon style={Style.pictureIcon} size={27} name={'photo'} />
+            <Icon
+              onPress={() =>
+                launchImageLibrary({ mediaType: 'photo' }, ({ uri }) => {
+                  const temp = [...images];
+                  temp.push({ uri });
+                  setImages(temp);
+                })
+              }
+              style={Style.pictureIcon}
+              size={27}
+              name={'photo'}
+            />
           </View>
           <Icon
             onPress={onDeleteHandler}
@@ -133,10 +142,8 @@ const Style = StyleSheet.create({
     paddingHorizontal: 10,
     borderWidth: 1,
     borderRadius: 5,
-    // backgroundColor: '#2563EB',
   },
   ripple__button: {
-    // color: 'white',
     color: 'black',
   },
   footerWrapper: {
