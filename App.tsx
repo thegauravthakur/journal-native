@@ -5,6 +5,7 @@ import { RecoilRoot } from 'recoil';
 import { DayView } from './views/DayView';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { TaskView } from './views/TaskView';
+import ImageGallery from './views/ImageGallery';
 
 const Stack = createStackNavigator();
 
@@ -15,6 +16,7 @@ function App() {
         <Stack.Navigator initialRouteName={'DayView'}>
           {/*<Stack.Screen name={'Daily View'} component={DailyView} />*/}
           <Stack.Screen name={'TaskView'} component={TaskView} />
+          <Stack.Screen name={'ImageGallery'} component={ImageGallery} />
           <Stack.Screen
             name={'DayView'}
             component={DayView}

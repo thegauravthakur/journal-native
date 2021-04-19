@@ -13,7 +13,6 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ripple from 'react-native-material-ripple';
 import { RecentImagePicker } from '../components/RecentImagePicker';
 import { SelectedImages } from '../components/SelectedImages';
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 
 export function TaskView({ route }) {
   const [titleHeight, setTitleHeight] = useState(42);
@@ -87,10 +86,9 @@ export function TaskView({ route }) {
             <Icon style={Style.gifIcon} size={18} name={'gif'} />
             <Icon
               onPress={() =>
-                launchImageLibrary({ mediaType: 'photo' }, ({ uri }) => {
-                  const temp = [...images];
-                  temp.push({ uri });
-                  setImages(temp);
+                navigation.navigate('ImageGallery', {
+                  setImages,
+                  images,
                 })
               }
               style={Style.pictureIcon}
