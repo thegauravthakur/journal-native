@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   ImageSourcePropType,
-  PermissionsAndroid,
   ScrollView,
   StyleSheet,
   Text,
@@ -13,14 +12,23 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ripple from 'react-native-material-ripple';
 import { RecentImagePicker } from '../components/RecentImagePicker';
 import { SelectedImages } from '../components/SelectedImages';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import {
+  descriptionInputState,
+  titleInputState,
+  userState,
+} from '../recoil/atom';
 
 export function TaskView({ route }) {
   const [titleHeight, setTitleHeight] = useState(42);
   const [descriptionHeight, setDescriptionHeight] = useState(42);
-  const { title, description, index, setData } = route.params;
+  const { title, description, index, setData, isNew } = route.params;
   const [inputTitle, setInputTitle] = useState(title);
   const [inputDescription, setInputDescription] = useState(description);
   const [images, setImages] = useState<Array<ImageSourcePropType>>([]);
+  const [user, setUser] = useRecoilState(userState);
+  const setTitle = useSetRecoilState(titleInputState);
+  const setDescription = useSetRecoilState(descriptionInputState);
   const navigation = useNavigation();
   navigation.setOptions({
     headerRight: () => (
@@ -28,11 +36,21 @@ export function TaskView({ route }) {
         onPress={() => {
           setData(data => {
             const temp = [...data];
-            temp[index] = {
-              title: inputTitle,
-              description: inputDescription,
-              time: Date.now(),
-            };
+            if (!isNew) {
+              temp[index] = {
+                title: inputTitle,
+                description: inputDescription,
+                time: Date.now(),
+              };
+            } else {
+              temp.unshift({
+                title: inputTitle,
+                description: inputDescription,
+                time: Date.now(),
+              });
+            }
+            setTitle('');
+            setDescription('');
             return temp;
           });
           navigation.goBack();
@@ -51,7 +69,9 @@ export function TaskView({ route }) {
     });
     navigation.goBack();
   };
-
+  if (!user) {
+    navigation.navigate('LoginView');
+  }
   return (
     <View style={Style.container}>
       <ScrollView>

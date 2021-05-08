@@ -32,7 +32,7 @@ export function DayViewListHeader({ setData, data }) {
             ...Style.container,
             ...(data.length === 0 && { borderLeftWidth: 0 }),
           }}>
-          <AddTaskInput />
+          <AddTaskInput setData={setData} />
         </View>
         <Ripple onPress={onClickHandler} rippleCentered style={Style.ripple}>
           <Icon style={Style.icon} name='plus' size={20} color='#8E93A2' />

@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { DayViewEvent } from '../components/DayViewEvent';
-import { AddTaskInput } from '../components/AddTaskInput';
 import { DayViewListHeader } from '../components/DayViewListHeader';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { userState } from '../recoil/atom';
+import auth from '@react-native-firebase/auth';
+import { useNavigation } from '@react-navigation/native';
+import Ripple from 'react-native-material-ripple';
+
 // import { request, PERMISSIONS } from 'react-native-permissions';
 
 export function DayView() {
+  const navigation = useNavigation();
+  const setUser = useSetRecoilState(userState);
   const [data, setData] = useState([
     {
       title: 'Event 1 Description',
@@ -44,12 +51,23 @@ export function DayView() {
         'lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
     },
   ]);
-
+  navigation.setOptions({
+    headerRight: () => (
+      <Ripple
+        onPress={async () => {
+          setTimeout(() => setUser(null), 100);
+          await auth().signOut();
+        }}
+        style={Style.ripple}>
+        <Text style={Style.ripple__button}>Logout</Text>
+      </Ripple>
+    ),
+  });
   return (
     <View style={{ flex: 1 }}>
       <FlatList
         style={Style.list}
-        keyboardShouldPersistTaps={'always'}
+        keyboardShouldPersistTaps={'handled'}
         ListHeaderComponent={() => (
           <DayViewListHeader data={data} setData={setData} />
         )}
@@ -70,5 +88,15 @@ export function DayView() {
 const Style = StyleSheet.create({
   list: {
     paddingTop: 12,
+  },
+  ripple: {
+    marginRight: 10,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderRadius: 5,
+  },
+  ripple__button: {
+    color: 'black',
   },
 });

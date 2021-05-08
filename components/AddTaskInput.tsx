@@ -2,8 +2,12 @@ import React, { useState } from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
 import { useRecoilState } from 'recoil';
 import { descriptionInputState, titleInputState } from '../recoil/atom';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useNavigation } from '@react-navigation/native';
 
-export function AddTaskInput({}) {
+export function AddTaskInput({ setData }) {
+  const navigation = useNavigation();
   const [title, setTitle] = useRecoilState(titleInputState);
   const [description, setDescription] = useRecoilState(descriptionInputState);
   const [show, setShow] = useState(false);
@@ -56,6 +60,30 @@ export function AddTaskInput({}) {
         placeholder={'Take a note'}
         placeholderTextColor={'black'}
       />
+      {show && (
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 10,
+            paddingBottom: 5,
+          }}>
+          <Ionicons
+            onPress={() => {
+              navigation.navigate('TaskView', {
+                title,
+                description,
+                setData: setData,
+                isNew: true,
+              });
+            }}
+            style={Style.expandIcon}
+            size={18}
+            name={'expand-outline'}
+          />
+        </View>
+      )}
     </View>
   );
 }
@@ -83,4 +111,8 @@ const Style = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 5,
   },
+  expandIcon: {
+    marginRight: 10,
+  },
+  pictureIcon: {},
 });
