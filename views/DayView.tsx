@@ -2,55 +2,20 @@ import React, { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { DayViewEvent } from '../components/DayViewEvent';
 import { DayViewListHeader } from '../components/DayViewListHeader';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { userState } from '../recoil/atom';
 import auth from '@react-native-firebase/auth';
 import { useNavigation } from '@react-navigation/native';
 import Ripple from 'react-native-material-ripple';
-
-// import { request, PERMISSIONS } from 'react-native-permissions';
+import firestore from '@react-native-firebase/firestore';
+import { format } from 'date-fns';
+import { LoadingSkeleton } from '../components/LoadingSkeleton';
 
 export function DayView() {
   const navigation = useNavigation();
-  const setUser = useSetRecoilState(userState);
-  const [data, setData] = useState([
-    {
-      title: 'Event 1 Description',
-      time: 1618136035755,
-      description:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-    },
-    {
-      title: 'Event 2 Description',
-      time: 1618136035655,
-      description:
-        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-    },
-    {
-      title: 'Event 3 Description',
-      time: 1618136035625,
-      description:
-        'Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis',
-    },
-    {
-      title: 'Event 4 Description',
-      time: 1618136035555,
-      description:
-        'At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores',
-    },
-    {
-      title: 'Event 5 Description',
-      time: 1618136035455,
-      description:
-        'slore aieo lcnoe wopqn mdoe hnvowl ls dfioej  cjvod oie  Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis',
-    },
-    {
-      title: 'Event 5 Description',
-      time: 1618136035155,
-      description:
-        'lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-    },
-  ]);
+  const [user, setUser] = useRecoilState(userState);
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
   navigation.setOptions({
     headerRight: () => (
       <Ripple
@@ -63,17 +28,40 @@ export function DayView() {
       </Ripple>
     ),
   });
+  useEffect(() => {
+    if (user) {
+      firestore()
+        .collection(user.uid)
+        .doc(format(new Date(), 'dd-MM-yyyy'))
+        .get()
+        .then(docData => {
+          if (docData.exists) {
+            const { events } = docData.data() as any;
+            setData(events);
+            setLoading(false);
+          }
+        });
+    } else {
+      setLoading(false);
+    }
+  }, [user]);
+  if (loading) {
+    return <LoadingSkeleton />;
+  }
+
   return (
     <View style={{ flex: 1 }}>
       <FlatList
+        contentContainerStyle={{ flexGrow: 1 }}
         style={Style.list}
         keyboardShouldPersistTaps={'handled'}
         ListHeaderComponent={() => (
-          <DayViewListHeader data={data} setData={setData} />
+          <DayViewListHeader loading={loading} data={data} setData={setData} />
         )}
         data={data}
-        renderItem={({ item, index }) => (
+        renderItem={({ item, index }: { item: any; index: number }) => (
           <DayViewEvent
+            key={item?.id}
             isEnd={index === data.length - 1}
             item={item}
             setData={setData}

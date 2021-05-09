@@ -13,19 +13,29 @@ import Ripple from 'react-native-material-ripple';
 import { RecentImagePicker } from '../components/RecentImagePicker';
 import { SelectedImages } from '../components/SelectedImages';
 import { useRecoilState, useSetRecoilState } from 'recoil';
+import uuid from 'react-native-uuid';
 import {
   descriptionInputState,
   titleInputState,
   userState,
 } from '../recoil/atom';
+import firestore from '@react-native-firebase/firestore';
+import { format } from 'date-fns';
 
 export function TaskView({ route }) {
   const [titleHeight, setTitleHeight] = useState(42);
   const [descriptionHeight, setDescriptionHeight] = useState(42);
-  const { title, description, index, setData, isNew } = route.params;
+  const {
+    title,
+    description,
+    index,
+    setData,
+    isNew,
+    imagesArray,
+  } = route.params;
   const [inputTitle, setInputTitle] = useState(title);
   const [inputDescription, setInputDescription] = useState(description);
-  const [images, setImages] = useState<Array<ImageSourcePropType>>([]);
+  const [images, setImages] = useState<Array<ImageSourcePropType>>(imagesArray);
   const [user, setUser] = useRecoilState(userState);
   const setTitle = useSetRecoilState(titleInputState);
   const setDescription = useSetRecoilState(descriptionInputState);
@@ -33,7 +43,7 @@ export function TaskView({ route }) {
   navigation.setOptions({
     headerRight: () => (
       <Ripple
-        onPress={() => {
+        onPress={async () => {
           setData(data => {
             const temp = [...data];
             if (!isNew) {
@@ -41,16 +51,26 @@ export function TaskView({ route }) {
                 title: inputTitle,
                 description: inputDescription,
                 time: Date.now(),
+                images,
+                id: uuid.v4(),
               };
             } else {
               temp.unshift({
                 title: inputTitle,
                 description: inputDescription,
                 time: Date.now(),
+                images,
+                id: uuid.v4(),
               });
             }
             setTitle('');
             setDescription('');
+            if (user) {
+              firestore()
+                .collection(user.uid)
+                .doc(format(new Date(), 'dd-MM-yyyy'))
+                .set({ events: temp }, { merge: true });
+            }
             return temp;
           });
           navigation.goBack();
@@ -61,10 +81,16 @@ export function TaskView({ route }) {
     ),
   });
 
-  const onDeleteHandler = () => {
+  const onDeleteHandler = async () => {
     setData(data => {
       const temp = [...data];
       temp.splice(index, 1);
+      if (user) {
+        firestore()
+          .collection(user.uid)
+          .doc(format(new Date(), 'dd-MM-yyyy'))
+          .set({ events: temp }, { merge: true });
+      }
       return temp;
     });
     navigation.goBack();

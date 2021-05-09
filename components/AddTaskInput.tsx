@@ -75,6 +75,7 @@ export function AddTaskInput({ setData }) {
                 title,
                 description,
                 setData: setData,
+                imagesArray: [],
                 isNew: true,
               });
             }}

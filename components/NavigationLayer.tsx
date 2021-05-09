@@ -4,9 +4,9 @@ import { LoginView } from '../views/LoginView';
 import { DayView } from '../views/DayView';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import * as React from 'react';
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { userState } from '../recoil/atom';
 import { useEffect, useState } from 'react';
 import auth from '@react-native-firebase/auth';
@@ -50,7 +50,7 @@ export function NavigationLayer() {
         ) : (
           <Stack.Screen
             name={'LoginView'}
-            options={{ title: 'Login', headerTitleAlign: 'center' }}
+            options={{ title: 'Login', headerShown: false }}
             component={LoginView}
           />
         )}

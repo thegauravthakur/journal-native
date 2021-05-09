@@ -4,10 +4,12 @@ import Icon from 'react-native-vector-icons/Feather';
 import Ripple from 'react-native-material-ripple';
 import { format } from 'date-fns';
 import { useNavigation } from '@react-navigation/native';
+import { ImageCollage } from './ImageCollage';
+import { LoadingSkeleton } from './LoadingSkeleton';
 
 export function DayViewEvent({ item, isEnd, index, setData }) {
   const navigation = useNavigation();
-  const { title, description, time } = item;
+  const { title, description, time, images } = item;
   return (
     <View>
       <View
@@ -20,6 +22,7 @@ export function DayViewEvent({ item, isEnd, index, setData }) {
         {description.length > 0 && (
           <Text style={Style.description}>{description}</Text>
         )}
+        <ImageCollage images={images} />
         <Text style={Style.date}>{format(new Date(time), 'do LLL, yyyy')}</Text>
       </View>
       <Ripple
@@ -29,6 +32,7 @@ export function DayViewEvent({ item, isEnd, index, setData }) {
             description,
             setData: setData,
             index: index,
+            imagesArray: images,
           })
         }
         rippleCentered
