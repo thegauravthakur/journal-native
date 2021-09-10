@@ -38,7 +38,7 @@ export function RecentImagePicker({ setImage }) {
               onPress={() =>
                 setImage(images => {
                   const temp = [...images];
-                  temp.push({ uri: p.node.image.uri });
+                  temp.push({ uri: p.node.image.uri, local: true });
                   return temp;
                 })
               }>

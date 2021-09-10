@@ -10,12 +10,37 @@ import Ripple from 'react-native-material-ripple';
 import firestore from '@react-native-firebase/firestore';
 import { format } from 'date-fns';
 import { LoadingSkeleton } from '../components/LoadingSkeleton';
+import storage from '@react-native-firebase/storage';
+import uuid from 'react-native-uuid';
 
 export function DayView() {
   const navigation = useNavigation();
   const [user, setUser] = useRecoilState(userState);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (user) {
+      firestore()
+        .collection(user.uid)
+        .doc(format(new Date(), 'dd-MM-yyyy'))
+        .get()
+        .then(async docData => {
+          if (docData.exists) {
+            const { events } = docData.data() as any;
+            setData(events);
+            setLoading(false);
+          } else {
+            setLoading(false);
+          }
+        });
+    } else {
+      setLoading(false);
+    }
+  }, [user]);
+  if (loading) {
+    return <LoadingSkeleton />;
+  }
   navigation.setOptions({
     headerRight: () => (
       <Ripple
@@ -28,27 +53,6 @@ export function DayView() {
       </Ripple>
     ),
   });
-  useEffect(() => {
-    if (user) {
-      firestore()
-        .collection(user.uid)
-        .doc(format(new Date(), 'dd-MM-yyyy'))
-        .get()
-        .then(docData => {
-          if (docData.exists) {
-            const { events } = docData.data() as any;
-            setData(events);
-            setLoading(false);
-          }
-        });
-    } else {
-      setLoading(false);
-    }
-  }, [user]);
-  if (loading) {
-    return <LoadingSkeleton />;
-  }
-
   return (
     <View style={{ flex: 1 }}>
       <FlatList

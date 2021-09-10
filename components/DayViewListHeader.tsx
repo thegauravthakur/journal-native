@@ -41,11 +41,9 @@ export function DayViewListHeader({ setData, data, loading }) {
   };
   return (
     <View>
-      {!loading && (
-        <Text style={Style.selectedDate}>
-          {format(new Date(), 'LLLL d, yyyy')}
-        </Text>
-      )}
+      <Text style={Style.selectedDate}>
+        {format(new Date(), 'LLLL d, yyyy')}
+      </Text>
       {!loading && (
         <View>
           <View

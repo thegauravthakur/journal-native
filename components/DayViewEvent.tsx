@@ -5,7 +5,6 @@ import Ripple from 'react-native-material-ripple';
 import { format } from 'date-fns';
 import { useNavigation } from '@react-navigation/native';
 import { ImageCollage } from './ImageCollage';
-import { LoadingSkeleton } from './LoadingSkeleton';
 
 export function DayViewEvent({ item, isEnd, index, setData }) {
   const navigation = useNavigation();

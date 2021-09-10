@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import {
-  ScrollView,
   Image,
   Text,
   StyleSheet,
-  TouchableHighlightComponent,
   TouchableHighlight,
-  TouchableNativeFeedback,
 } from 'react-native';
 import CameraRoll, {
   PhotoIdentifier,
@@ -105,7 +102,7 @@ const ImageGallery = ({ route }) => {
           onPress={() => {
             setImages(images => {
               const temp = [...images];
-              temp.push({ uri: item.node.image.uri });
+              temp.push({ uri: item.node.image.uri, local: true });
               return temp;
             });
             navigation.goBack();

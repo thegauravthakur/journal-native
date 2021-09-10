@@ -4,12 +4,46 @@ import {
   StyleSheet,
   View,
   ScrollView,
+  Text,
 } from 'react-native';
 import Image from 'react-native-scalable-image';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import storage from '@react-native-firebase/storage';
+import { format } from 'date-fns';
+import { useRecoilValue } from 'recoil';
+import { userState } from '../recoil/atom';
 
 export function SelectedImages({ images, setImages }) {
+  const [loading, setLoading] = useState(true);
+  const user = useRecoilValue(userState);
+  useEffect(() => {
+    const promises: any[] = [];
+    const getAllPromises = () => {
+      images.forEach(image => {
+        const ref = storage().ref(
+          `${user?.uid}/${format(new Date(), 'dd-MM-yyyy')}/${image.uid}`,
+        );
+        promises.push(ref.getDownloadURL());
+      });
+    };
+    getAllPromises();
+    Promise.all(promises).then(result => {
+      const finalImageArray = [];
+      for (let i = 0; i < result.length; i++) {
+        finalImageArray.push({ uri: result[i], local: false });
+      }
+      setImages(finalImageArray);
+      setLoading(false);
+    });
+  }, []);
+  if (loading) {
+    return (
+      <View>
+        <Text>loading</Text>
+      </View>
+    );
+  }
   return (
     <View>
       {images.length === 1 && (

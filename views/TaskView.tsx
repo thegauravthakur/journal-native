@@ -21,6 +21,8 @@ import {
 } from '../recoil/atom';
 import firestore from '@react-native-firebase/firestore';
 import { format } from 'date-fns';
+import storage from '@react-native-firebase/storage';
+import Progress from 'react-native-progress/Bar';
 
 export function TaskView({ route }) {
   const [titleHeight, setTitleHeight] = useState(42);
@@ -36,10 +38,36 @@ export function TaskView({ route }) {
   const [inputTitle, setInputTitle] = useState(title);
   const [inputDescription, setInputDescription] = useState(description);
   const [images, setImages] = useState<Array<ImageSourcePropType>>(imagesArray);
+  const [progressValue, setProgressValue] = useState(0);
+  const [imageLoading, setImageLoading] = useState(false);
   const [user, setUser] = useRecoilState(userState);
   const setTitle = useSetRecoilState(titleInputState);
   const setDescription = useSetRecoilState(descriptionInputState);
   const navigation = useNavigation();
+
+  const uploadAllImages = async () => {
+    setImageLoading(true);
+    for (let i = 0; i < images.length; i++) {
+      if (images[i].local) {
+        const _uid = uuid.v4();
+        const ref = await storage().ref(
+          `${user?.uid}/${format(new Date(), 'dd-MM-yyyy')}/${_uid}`,
+        );
+        const task = await ref.putFile(images[i].uri);
+        const total = (task.bytesTransferred / task.totalBytes) * 100;
+        setProgressValue(total / ((images.length - i) * 10));
+        images[i].uid = _uid;
+        images[i].local = false;
+        if (
+          i === images.length - 1 &&
+          task.bytesTransferred === task.totalBytes
+        ) {
+          setImageLoading(false);
+          setProgressValue(1);
+        }
+      }
+    }
+  };
   navigation.setOptions({
     headerRight: () => (
       <Ripple
@@ -66,14 +94,16 @@ export function TaskView({ route }) {
             setTitle('');
             setDescription('');
             if (user) {
-              firestore()
-                .collection(user.uid)
-                .doc(format(new Date(), 'dd-MM-yyyy'))
-                .set({ events: temp }, { merge: true });
+              uploadAllImages().then(() => {
+                firestore()
+                  .collection(user.uid)
+                  .doc(format(new Date(), 'dd-MM-yyyy'))
+                  .set({ events: temp }, { merge: true })
+                  .then(() => navigation.goBack());
+              });
             }
             return temp;
           });
-          navigation.goBack();
         }}
         style={Style.ripple}>
         <Text style={Style.ripple__button}>submit</Text>
@@ -100,6 +130,7 @@ export function TaskView({ route }) {
   }
   return (
     <View style={Style.container}>
+      {imageLoading && <Progress progress={progressValue} width={null} />}
       <ScrollView>
         <TextInput
           onChangeText={e => setInputTitle(e)}
@@ -131,12 +162,14 @@ export function TaskView({ route }) {
           <View style={Style.footerFirstHalf}>
             <Icon style={Style.gifIcon} size={18} name={'gif'} />
             <Icon
-              onPress={() =>
-                navigation.navigate('ImageGallery', {
-                  setImages,
-                  images,
-                })
-              }
+              onPress={() => {
+                if (images.length < 4) {
+                  navigation.navigate('ImageGallery', {
+                    setImages,
+                    images,
+                  });
+                }
+              }}
               style={Style.pictureIcon}
               size={27}
               name={'photo'}
