@@ -1,138 +1,230 @@
-import { Dimensions, Image as Img, StyleSheet, View, Text } from 'react-native';
+import {
+  Dimensions,
+  Image as Img,
+  StyleSheet,
+  View,
+  Text,
+  Modal,
+  TouchableOpacity,
+} from 'react-native';
 import Image from 'react-native-scalable-image';
 import React, { useEffect, useState } from 'react';
-import storage from '@react-native-firebase/storage';
 import { useRecoilState } from 'recoil';
-import { userState } from '../recoil/atom';
 import { format } from 'date-fns';
+import ImageViewer from 'react-native-image-zoom-viewer';
 
 export function ImageCollage({ images }) {
-  const [loading, setLoading] = useState(true);
-  const [_images, setImages] = useState<String[]>(images);
-  const [user, setUser] = useRecoilState(userState);
-  useEffect(() => {
-    const promises: any[] = [];
-    const getAllPromises = () => {
-      images.forEach(image => {
-        const ref = storage().ref(
-          `${user?.uid}/${format(new Date(), 'dd-MM-yyyy')}/${image.uid}`,
-        );
-        promises.push(ref.getDownloadURL());
-      });
-    };
-    getAllPromises();
-    Promise.all(promises).then(result => {
-      const finalImageArray = [];
-      for (let i = 0; i < result.length; i++) {
-        finalImageArray.push({ uri: result[i], local: false });
-      }
-      setImages(finalImageArray);
-      setLoading(false);
-    });
-  });
-  if (loading) {
-    return (
-      <View>
-        <Text>Loading</Text>
-      </View>
-    );
-  }
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [bigImageModal, setBigImageModal] = useState(false);
+
   return (
-    <View>
-      {_images?.length === 1 && (
-        <View style={Style.singleImgContainer}>
-          <Image
-            component={Img}
-            style={Style.singleImage}
-            width={Dimensions.get('window').width - 60}
-            source={_images[0]}
-          />
-        </View>
-      )}
-      {_images?.length === 2 && (
-        <View style={Style.twoImageOuterWrapper}>
-          <View style={Style.twoImageWrapper}>
-            <Img
-              style={{
-                width: '100%',
-                height: undefined,
-                aspectRatio: 1,
-                borderTopLeftRadius: 15,
-                borderBottomLeftRadius: 15,
+    <>
+      <Modal visible={bigImageModal} transparent={true}>
+        <ImageViewer
+          onShowModal={ctx => console.log(ctx)}
+          enableSwipeDown={true}
+          onSwipeDown={() => setBigImageModal(false)}
+          imageUrls={images}
+          onCancel={() => setBigImageModal(false)}
+          index={currentIndex}
+        />
+      </Modal>
+      <View>
+        {images?.length === 1 && (
+          <View style={Style.singleImgContainer}>
+            <Image
+              onPress={() => {
+                setCurrentIndex(0);
+                setBigImageModal(true);
               }}
-              source={_images[0]}
+              component={Img}
+              style={Style.singleImage}
+              width={Dimensions.get('window').width - 60}
+              source={{ uri: images[0].url }}
+              height={238}
             />
           </View>
-          <View style={Style.twoImageWrapper}>
-            <Img
-              style={{
-                width: '100%',
-                height: undefined,
-                aspectRatio: 1,
-                borderTopRightRadius: 15,
-                borderBottomRightRadius: 15,
-                marginLeft: 1,
-              }}
-              source={_images[1]}
-            />
-          </View>
-        </View>
-      )}
-      {_images?.length === 4 && (
-        <View>
+        )}
+        {images?.length === 2 && (
           <View style={Style.twoImageOuterWrapper}>
             <View style={Style.twoImageWrapper}>
-              <Img
-                style={{
-                  width: '100%',
-                  height: undefined,
-                  aspectRatio: 1,
-                  borderTopLeftRadius: 15,
-                }}
-                source={_images[0]}
-              />
+              <TouchableOpacity
+                onPress={() => {
+                  setCurrentIndex(0);
+                  setBigImageModal(true);
+                }}>
+                <Img
+                  style={{
+                    width: '100%',
+                    height: undefined,
+                    aspectRatio: 1,
+                    borderTopLeftRadius: 15,
+                    borderBottomLeftRadius: 15,
+                  }}
+                  source={{ uri: images[0].url }}
+                />
+              </TouchableOpacity>
             </View>
             <View style={Style.twoImageWrapper}>
-              <Img
-                style={{
-                  width: '100%',
-                  height: undefined,
-                  aspectRatio: 1,
-                  borderTopRightRadius: 15,
-                  marginLeft: 1,
-                }}
-                source={_images[1]}
-              />
+              <TouchableOpacity
+                onPress={() => {
+                  setCurrentIndex(1);
+                  setBigImageModal(true);
+                }}>
+                <Img
+                  style={{
+                    width: '100%',
+                    height: undefined,
+                    aspectRatio: 1,
+                    borderTopRightRadius: 15,
+                    borderBottomRightRadius: 15,
+                    marginLeft: 1,
+                  }}
+                  source={{ uri: images[1].url }}
+                />
+              </TouchableOpacity>
             </View>
           </View>
-          <View style={{ ...Style.FourImageOuterWrapper }}>
-            <View style={Style.twoImageWrapper}>
-              <Img
-                style={{
-                  width: '100%',
-                  height: undefined,
-                  aspectRatio: 1,
-                  borderBottomLeftRadius: 15,
-                }}
-                source={_images[2]}
-              />
+        )}
+        {images?.length === 3 && (
+          <View>
+            <View style={Style.twoImageOuterWrapper}>
+              <View style={Style.twoImageWrapper}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setCurrentIndex(0);
+                    setBigImageModal(true);
+                  }}>
+                  <Img
+                    style={{
+                      width: '100%',
+                      height: undefined,
+                      aspectRatio: 1,
+                      borderTopLeftRadius: 15,
+                    }}
+                    source={{ uri: images[0].url }}
+                  />
+                </TouchableOpacity>
+              </View>
+              <View style={Style.twoImageWrapper}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setCurrentIndex(1);
+                    setBigImageModal(true);
+                  }}>
+                  <Img
+                    style={{
+                      width: '100%',
+                      height: undefined,
+                      aspectRatio: 1,
+                      borderTopRightRadius: 15,
+                      marginLeft: 1,
+                    }}
+                    source={{ uri: images[1].url }}
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
-            <View style={Style.twoImageWrapper}>
-              <Img
-                style={{
-                  width: '100%',
-                  height: undefined,
-                  aspectRatio: 1,
-                  borderBottomRightRadius: 15,
-                  marginLeft: 1,
-                }}
-                source={_images[3]}
-              />
+            <View style={{ ...Style.FourImageOuterWrapper }}>
+              <TouchableOpacity
+                onPress={() => {
+                  setCurrentIndex(2);
+                  setBigImageModal(true);
+                }}>
+                <Img
+                  style={{
+                    width: '100%',
+                    height: undefined,
+                    aspectRatio: 2,
+                    borderBottomLeftRadius: 15,
+                    borderBottomRightRadius: 15,
+                  }}
+                  source={{ uri: images[2].url }}
+                />
+              </TouchableOpacity>
             </View>
           </View>
-        </View>
-      )}
-    </View>
+        )}
+        {images?.length === 4 && (
+          <View>
+            <View style={Style.twoImageOuterWrapper}>
+              <View style={Style.twoImageWrapper}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setCurrentIndex(0);
+                    setBigImageModal(true);
+                  }}>
+                  <Img
+                    style={{
+                      width: '100%',
+                      height: undefined,
+                      aspectRatio: 1,
+                      borderTopLeftRadius: 15,
+                    }}
+                    source={{ uri: images[0].url }}
+                  />
+                </TouchableOpacity>
+              </View>
+              <View style={Style.twoImageWrapper}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setCurrentIndex(1);
+                    setBigImageModal(true);
+                  }}>
+                  <Img
+                    style={{
+                      width: '100%',
+                      height: undefined,
+                      aspectRatio: 1,
+                      borderTopRightRadius: 15,
+                      marginLeft: 1,
+                    }}
+                    source={{ uri: images[1].url }}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+            <View style={{ ...Style.FourImageOuterWrapper }}>
+              <View style={Style.twoImageWrapper}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setCurrentIndex(2);
+                    setBigImageModal(true);
+                  }}>
+                  <Img
+                    style={{
+                      width: '100%',
+                      height: undefined,
+                      aspectRatio: 1,
+                      borderBottomLeftRadius: 15,
+                    }}
+                    source={{ uri: images[2].url }}
+                  />
+                </TouchableOpacity>
+              </View>
+              <View style={Style.twoImageWrapper}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setCurrentIndex(3);
+                    setBigImageModal(true);
+                  }}>
+                  <Img
+                    style={{
+                      width: '100%',
+                      height: undefined,
+                      aspectRatio: 1,
+                      borderBottomRightRadius: 15,
+                      marginLeft: 1,
+                    }}
+                    source={{ uri: images[3].url }}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        )}
+      </View>
+    </>
   );
 }
 

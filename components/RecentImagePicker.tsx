@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
+import ImgToBase64 from 'react-native-image-base64';
 
 export function RecentImagePicker({ setImage }) {
   const [photos, setPhotos] = useState<PhotoIdentifier[]>([]);
@@ -35,13 +36,18 @@ export function RecentImagePicker({ setImage }) {
             <TouchableHighlight
               key={p.node.image.uri}
               style={{ ...Style.image }}
-              onPress={() =>
+              onPress={async () => {
+                const base64 = await ImgToBase64.getBase64String(
+                  p.node.image.uri,
+                );
                 setImage(images => {
                   const temp = [...images];
-                  temp.push({ uri: p.node.image.uri, local: true });
+                  temp.push({
+                    uri: 'data:image/jpg;base64,' + base64,
+                  });
                   return temp;
-                })
-              }>
+                });
+              }}>
               <Image
                 style={{ ...Style.image, margin: 0 }}
                 key={i}

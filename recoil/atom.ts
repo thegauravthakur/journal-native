@@ -1,5 +1,4 @@
 import { atom } from 'recoil';
-import { FirebaseAuthTypes } from '@react-native-firebase/auth';
 
 const titleInputState = atom({
   key: 'titleState',
@@ -9,10 +8,9 @@ const descriptionInputState = atom({
   key: 'descriptionState',
   default: '',
 });
-
-const userState = atom<FirebaseAuthTypes.User | null>({
-  key: 'userState',
-  default: null,
+const activeDateState = atom({
+  key: 'activeDateState',
+  default: new Date(),
 });
 
-export { titleInputState, descriptionInputState, userState };
+export { titleInputState, descriptionInputState, activeDateState };

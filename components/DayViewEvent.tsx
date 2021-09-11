@@ -2,13 +2,15 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import Ripple from 'react-native-material-ripple';
-import { format } from 'date-fns';
+import { format, isToday } from 'date-fns';
 import { useNavigation } from '@react-navigation/native';
 import { ImageCollage } from './ImageCollage';
+import TimeAgo from 'javascript-time-ago';
 
 export function DayViewEvent({ item, isEnd, index, setData }) {
   const navigation = useNavigation();
-  const { title, description, time, images } = item;
+  const { title, description, createdAt, images, _id } = item;
+  const timeAgo = new TimeAgo('en-US');
   return (
     <View>
       <View
@@ -22,13 +24,18 @@ export function DayViewEvent({ item, isEnd, index, setData }) {
           <Text style={Style.description}>{description}</Text>
         )}
         <ImageCollage images={images} />
-        <Text style={Style.date}>{format(new Date(time), 'do LLL, yyyy')}</Text>
+        <Text style={Style.date}>
+          {isToday(createdAt)
+            ? timeAgo.format(createdAt)
+            : format(new Date(createdAt), 'do LLL, yyyy')}
+        </Text>
       </View>
       <Ripple
         onPress={() =>
           navigation.navigate('TaskView', {
             title,
             description,
+            _id,
             setData: setData,
             index: index,
             imagesArray: images,

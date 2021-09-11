@@ -1,20 +1,18 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import auth from '@react-native-firebase/auth';
 import SocialButton from '../components/SocialButton';
 
 export function LoginView() {
   const [loading, setLoading] = useState(false);
   const onGoogleButtonPress = async () => {
     setLoading(true);
-    GoogleSignin.configure({
-      webClientId:
-        '769834226123-c3orkkjrb502ko9qjgpe2700f6g71r9v.apps.googleusercontent.com',
-    });
-    const { idToken } = await GoogleSignin.signIn();
-    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-    return auth().signInWithCredential(googleCredential);
+    // GoogleSignin.configure({
+    //   webClientId:
+    //     '769834226123-c3orkkjrb502ko9qjgpe2700f6g71r9v.apps.googleusercontent.com',
+    // });
+    // const { idToken } = await GoogleSignin.signIn();
+    // const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+    // return auth().signInWithCredential(googleCredential);
   };
   return (
     <View style={Style.wrapper}>

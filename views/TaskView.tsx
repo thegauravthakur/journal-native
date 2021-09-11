@@ -12,98 +12,84 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ripple from 'react-native-material-ripple';
 import { RecentImagePicker } from '../components/RecentImagePicker';
 import { SelectedImages } from '../components/SelectedImages';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import uuid from 'react-native-uuid';
 import {
+  activeDateState,
   descriptionInputState,
   titleInputState,
-  userState,
 } from '../recoil/atom';
-import firestore from '@react-native-firebase/firestore';
-import { format } from 'date-fns';
-import storage from '@react-native-firebase/storage';
-import Progress from 'react-native-progress/Bar';
+import Realm from 'realm';
+import { EventSchema, ImageSchema } from '../db/EventSchema';
+import { endOfDay, startOfDay } from 'date-fns';
 
 export function TaskView({ route }) {
   const [titleHeight, setTitleHeight] = useState(42);
   const [descriptionHeight, setDescriptionHeight] = useState(42);
-  const {
-    title,
-    description,
-    index,
-    setData,
-    isNew,
-    imagesArray,
-  } = route.params;
+  const { title, description, setData, isNew, imagesArray, _id } = route.params;
   const [inputTitle, setInputTitle] = useState(title);
   const [inputDescription, setInputDescription] = useState(description);
   const [images, setImages] = useState<Array<ImageSourcePropType>>(imagesArray);
-  const [progressValue, setProgressValue] = useState(0);
-  const [imageLoading, setImageLoading] = useState(false);
-  const [user, setUser] = useRecoilState(userState);
   const setTitle = useSetRecoilState(titleInputState);
   const setDescription = useSetRecoilState(descriptionInputState);
+  const activeDate = useRecoilValue(activeDateState);
   const navigation = useNavigation();
+  const realm = new Realm({
+    path: 'myrealm2.realm',
+    schema: [EventSchema, ImageSchema],
+  });
 
-  const uploadAllImages = async () => {
-    setImageLoading(true);
-    for (let i = 0; i < images.length; i++) {
-      if (images[i].local) {
-        const _uid = uuid.v4();
-        const ref = await storage().ref(
-          `${user?.uid}/${format(new Date(), 'dd-MM-yyyy')}/${_uid}`,
-        );
-        const task = await ref.putFile(images[i].uri);
-        const total = (task.bytesTransferred / task.totalBytes) * 100;
-        setProgressValue(total / ((images.length - i) * 10));
-        images[i].uid = _uid;
-        images[i].local = false;
-        if (
-          i === images.length - 1 &&
-          task.bytesTransferred === task.totalBytes
-        ) {
-          setImageLoading(false);
-          setProgressValue(1);
-        }
-      }
-    }
-  };
   navigation.setOptions({
     headerRight: () => (
       <Ripple
         onPress={async () => {
           setData(data => {
-            const temp = [...data];
             if (!isNew) {
-              temp[index] = {
-                title: inputTitle,
-                description: inputDescription,
-                time: Date.now(),
-                images,
-                id: uuid.v4(),
-              };
+              const Event = realm.objects('Event');
+              const target = Event.filtered(`_id == "${_id}"`);
+              realm.write(() => {
+                target[0].title = inputTitle;
+                target[0].description = inputDescription;
+                for (let i = 0; i < images.length; i++) {
+                  if (!images[i]._id) {
+                    const image = realm.create('Image', {
+                      _id: uuid.v4(),
+                      url: images[i].uri,
+                    });
+                    target[0].images.push(image);
+                  }
+                }
+              });
             } else {
-              temp.unshift({
-                title: inputTitle,
-                description: inputDescription,
-                time: Date.now(),
-                images,
-                id: uuid.v4(),
+              realm.write(() => {
+                const Event = realm.create('Event', {
+                  _id: uuid.v4(),
+                  title: inputTitle,
+                  description: inputDescription,
+                  createdAt: new Date(),
+                });
+
+                for (let i = 0; i < images.length; i++) {
+                  const image = realm.create('Image', {
+                    _id: uuid.v4(),
+                    url: images[i].uri,
+                  });
+                  Event.images.push(image);
+                }
               });
             }
             setTitle('');
             setDescription('');
-            if (user) {
-              uploadAllImages().then(() => {
-                firestore()
-                  .collection(user.uid)
-                  .doc(format(new Date(), 'dd-MM-yyyy'))
-                  .set({ events: temp }, { merge: true })
-                  .then(() => navigation.goBack());
-              });
-            }
-            return temp;
+            return realm
+              .objects('Event')
+              .filtered(
+                'createdAt >= $0 && createdAt <= $1',
+                startOfDay(activeDate),
+                endOfDay(activeDate),
+              )
+              .sorted('createdAt', true);
           });
+          navigation.goBack();
         }}
         style={Style.ripple}>
         <Text style={Style.ripple__button}>submit</Text>
@@ -113,24 +99,30 @@ export function TaskView({ route }) {
 
   const onDeleteHandler = async () => {
     setData(data => {
-      const temp = [...data];
-      temp.splice(index, 1);
-      if (user) {
-        firestore()
-          .collection(user.uid)
-          .doc(format(new Date(), 'dd-MM-yyyy'))
-          .set({ events: temp }, { merge: true });
-      }
-      return temp;
+      const Event = realm.objects('Event');
+      let target = Event.filtered(`_id == "${_id}"`);
+      const Image = target[0].images;
+      const imagesToDelete = Image.filter(image => image._id);
+
+      realm.write(() => {
+        realm.delete(imagesToDelete);
+        realm.delete(target);
+      });
+
+      return realm
+        .objects('Event')
+        .filtered(
+          'createdAt >= $0 && createdAt <= $1',
+          startOfDay(activeDate),
+          endOfDay(activeDate),
+        )
+        .sorted('createdAt', true);
     });
     navigation.goBack();
   };
-  if (!user) {
-    navigation.navigate('LoginView');
-  }
+
   return (
     <View style={Style.container}>
-      {imageLoading && <Progress progress={progressValue} width={null} />}
       <ScrollView>
         <TextInput
           onChangeText={e => setInputTitle(e)}

@@ -5,36 +5,44 @@ import Ripple from 'react-native-material-ripple';
 import { AddTaskInput } from './AddTaskInput';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import {
+  activeDateState,
   descriptionInputState,
   titleInputState,
-  userState,
 } from '../recoil/atom';
-import { format } from 'date-fns';
+import { endOfDay, format, startOfDay } from 'date-fns';
 import uuid from 'react-native-uuid';
-import firestore from '@react-native-firebase/firestore';
+import Realm from 'realm';
+import { EventSchema, ImageSchema } from '../db/EventSchema';
 
-export function DayViewListHeader({ setData, data, loading }) {
-  const user = useRecoilValue(userState);
+export function DayViewListHeader({ setData, data }) {
   const [title, setTitle] = useRecoilState(titleInputState);
   const [description, setDescription] = useRecoilState(descriptionInputState);
+  const activeDate = useRecoilValue(activeDateState);
+  const realm = new Realm({
+    path: 'myrealm2.realm',
+    schema: [EventSchema, ImageSchema],
+  });
 
   const onClickHandler = async () => {
     if (title || description) {
-      const temp = [...data];
-      temp.unshift({
-        title,
-        description,
-        images: [],
-        time: Date.now(),
-        id: uuid.v4(),
+      realm.write(() => {
+        realm.create('Event', {
+          title,
+          description,
+          createdAt: new Date(),
+          images: [],
+          _id: uuid.v4(),
+        });
       });
-      setData(temp);
-      if (user) {
-        await firestore()
-          .collection(user.uid)
-          .doc(format(new Date(), 'dd-MM-yyyy'))
-          .set({ events: temp }, { merge: true });
-      }
+      const all = realm
+        .objects('Event')
+        .filtered(
+          'createdAt >= $0 && createdAt <= $1',
+          startOfDay(activeDate),
+          endOfDay(activeDate),
+        )
+        .sorted('createdAt', true);
+      setData(all);
       setTitle('');
       setDescription('');
     }
@@ -42,31 +50,28 @@ export function DayViewListHeader({ setData, data, loading }) {
   return (
     <View>
       <Text style={Style.selectedDate}>
-        {format(new Date(), 'LLLL d, yyyy')}
+        {format(activeDate, 'LLLL d, yyyy')}
       </Text>
-      {!loading && (
-        <View>
-          <View
-            pointerEvents={'box-none'}
-            style={{
-              ...Style.container,
-              ...(data.length === 0 && { borderLeftWidth: 0 }),
-            }}>
-            <AddTaskInput setData={setData} />
-          </View>
-          <Ripple onPress={onClickHandler} rippleCentered style={Style.ripple}>
-            <Icon style={Style.icon} name='plus' size={20} color='#8E93A2' />
-          </Ripple>
+      <View>
+        <View
+          pointerEvents={'box-none'}
+          style={{
+            ...Style.container,
+            ...(data.length === 0 && { borderLeftWidth: 0 }),
+          }}>
+          <AddTaskInput setData={setData} />
         </View>
-      )}
+        <Ripple onPress={onClickHandler} rippleCentered style={Style.ripple}>
+          <Icon style={Style.icon} name='plus' size={20} color='#8E93A2' />
+        </Ripple>
+      </View>
     </View>
   );
 }
 
 const Style = StyleSheet.create({
   selectedDate: {
-    fontSize: 32,
-    fontWeight: 'bold',
+    fontSize: 29,
     marginLeft: 12,
     marginBottom: 30,
   },

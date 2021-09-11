@@ -1,10 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Image,
-  Text,
-  StyleSheet,
-  TouchableHighlight,
-} from 'react-native';
+import { Image, Text, StyleSheet, TouchableHighlight } from 'react-native';
 import CameraRoll, {
   PhotoIdentifier,
 } from '@react-native-community/cameraroll';
@@ -12,6 +7,8 @@ import { FlatGrid } from 'react-native-super-grid';
 import { useNavigation } from '@react-navigation/native';
 import RNPickerSelect from 'react-native-picker-select';
 import Ripple from 'react-native-material-ripple';
+import ImgToBase64 from 'react-native-image-base64';
+
 const pickerStyle = {
   inputIOS: {
     color: 'white',
@@ -44,9 +41,7 @@ const ImageGallery = ({ route }) => {
   const [photos, setPhotos] = useState<PhotoIdentifier[]>([]);
   const [albums, setAlbums] = useState<any[]>([]);
   const [selectedAlbum, setSelectedAlbum] = useState('');
-  useEffect(() => {
-    images.forEach(e => console.log(e));
-  }, []);
+
   useEffect(() => {
     CameraRoll.getAlbums({ assetType: 'Photos' }).then(d => {
       const temp: any[] = [];
@@ -99,10 +94,13 @@ const ImageGallery = ({ route }) => {
             images.filter(img => img.uri === item.node.image.uri).length > 0
           }
           style={{ ...Style.image }}
-          onPress={() => {
+          onPress={async () => {
+            const base64 = await ImgToBase64.getBase64String(
+              item.node.image.uri,
+            );
             setImages(images => {
               const temp = [...images];
-              temp.push({ uri: item.node.image.uri, local: true });
+              temp.push({ uri: 'data:image/jpg;base64,' + base64 });
               return temp;
             });
             navigation.goBack();

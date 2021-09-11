@@ -9,41 +9,8 @@ import {
 import Image from 'react-native-scalable-image';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import React, { useContext, useEffect, useState } from 'react';
-import storage from '@react-native-firebase/storage';
-import { format } from 'date-fns';
-import { useRecoilValue } from 'recoil';
-import { userState } from '../recoil/atom';
 
 export function SelectedImages({ images, setImages }) {
-  const [loading, setLoading] = useState(true);
-  const user = useRecoilValue(userState);
-  useEffect(() => {
-    const promises: any[] = [];
-    const getAllPromises = () => {
-      images.forEach(image => {
-        const ref = storage().ref(
-          `${user?.uid}/${format(new Date(), 'dd-MM-yyyy')}/${image.uid}`,
-        );
-        promises.push(ref.getDownloadURL());
-      });
-    };
-    getAllPromises();
-    Promise.all(promises).then(result => {
-      const finalImageArray = [];
-      for (let i = 0; i < result.length; i++) {
-        finalImageArray.push({ uri: result[i], local: false });
-      }
-      setImages(finalImageArray);
-      setLoading(false);
-    });
-  }, []);
-  if (loading) {
-    return (
-      <View>
-        <Text>loading</Text>
-      </View>
-    );
-  }
   return (
     <View>
       {images.length === 1 && (
@@ -52,7 +19,7 @@ export function SelectedImages({ images, setImages }) {
             component={Img}
             style={Style.image}
             width={Dimensions.get('window').width - 40}
-            source={images[0]}
+            source={{ uri: images[0]._id ? images[0].url : images[0].uri }}
           />
           <Icon
             onPress={() => {
@@ -67,12 +34,12 @@ export function SelectedImages({ images, setImages }) {
         </View>
       )}
       {images.length > 1 && (
-        <ScrollView horizontal={true}>
+        <ScrollView horizontal={true} style={{ marginVertical: 20 }}>
           <View>
             <Image
-              style={{ borderRadius: 10, marginRight: 5 }}
+              style={{ borderRadius: 10, marginLeft: 5 }}
               height={190}
-              source={images[0]}
+              source={{ uri: images[0]._id ? images[0].url : images[0].uri }}
             />
             <Icon
               onPress={() => {
@@ -95,9 +62,9 @@ export function SelectedImages({ images, setImages }) {
           </View>
           <View>
             <Image
-              style={{ borderRadius: 10, ...(images[2] && { marginRight: 5 }) }}
+              style={{ borderRadius: 10, marginLeft: 5 }}
               height={190}
-              source={images[1]}
+              source={{ uri: images[1]._id ? images[1].url : images[1].uri }}
             />
             <Icon
               onPress={() => {
@@ -123,10 +90,10 @@ export function SelectedImages({ images, setImages }) {
               <Image
                 style={{
                   borderRadius: 10,
-                  ...(images[3] && { marginRight: 5 }),
+                  marginLeft: 5,
                 }}
                 height={190}
-                source={images[2]}
+                source={{ uri: images[2]._id ? images[2].url : images[2].uri }}
               />
               <Icon
                 onPress={() => {
@@ -151,9 +118,9 @@ export function SelectedImages({ images, setImages }) {
           {images[3] && (
             <View>
               <Image
-                style={{ borderRadius: 10 }}
+                style={{ borderRadius: 10, marginLeft: 5 }}
                 height={190}
-                source={images[3]}
+                source={{ uri: images[3]._id ? images[3].url : images[3].uri }}
               />
               <Icon
                 onPress={() => {

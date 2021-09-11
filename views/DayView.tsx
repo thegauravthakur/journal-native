@@ -2,53 +2,41 @@ import React, { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { DayViewEvent } from '../components/DayViewEvent';
 import { DayViewListHeader } from '../components/DayViewListHeader';
-import { useRecoilState } from 'recoil';
-import { userState } from '../recoil/atom';
-import auth from '@react-native-firebase/auth';
 import { useNavigation } from '@react-navigation/native';
 import Ripple from 'react-native-material-ripple';
-import firestore from '@react-native-firebase/firestore';
-import { format } from 'date-fns';
 import { LoadingSkeleton } from '../components/LoadingSkeleton';
-import storage from '@react-native-firebase/storage';
-import uuid from 'react-native-uuid';
+import { EventSchema, ImageSchema } from '../db/EventSchema';
+import Realm from 'realm';
+import { Calendar } from 'react-native-calendars';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import { activeDateState } from '../recoil/atom';
+import { startOfDay, endOfDay } from 'date-fns';
 
 export function DayView() {
   const navigation = useNavigation();
-  const [user, setUser] = useRecoilState(userState);
   const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [activeDate, setActiveDate] = useRecoilState(activeDateState);
+
+  const realm = new Realm({
+    path: 'myrealm2.realm',
+    schema: [EventSchema, ImageSchema],
+  });
 
   useEffect(() => {
-    if (user) {
-      firestore()
-        .collection(user.uid)
-        .doc(format(new Date(), 'dd-MM-yyyy'))
-        .get()
-        .then(async docData => {
-          if (docData.exists) {
-            const { events } = docData.data() as any;
-            setData(events);
-            setLoading(false);
-          } else {
-            setLoading(false);
-          }
-        });
-    } else {
-      setLoading(false);
-    }
-  }, [user]);
-  if (loading) {
-    return <LoadingSkeleton />;
-  }
+    const all = realm
+      .objects('Event')
+      .filtered(
+        'createdAt >= $0 && createdAt <= $1',
+        startOfDay(activeDate),
+        endOfDay(activeDate),
+      )
+      .sorted('createdAt', true);
+    setData(all);
+  }, [activeDate]);
+
   navigation.setOptions({
     headerRight: () => (
-      <Ripple
-        onPress={async () => {
-          setTimeout(() => setUser(null), 100);
-          await auth().signOut();
-        }}
-        style={Style.ripple}>
+      <Ripple onPress={async () => {}} style={Style.ripple}>
         <Text style={Style.ripple__button}>Logout</Text>
       </Ripple>
     ),
@@ -60,9 +48,22 @@ export function DayView() {
         style={Style.list}
         keyboardShouldPersistTaps={'handled'}
         ListHeaderComponent={() => (
-          <DayViewListHeader loading={loading} data={data} setData={setData} />
+          <DayViewListHeader data={data} setData={setData} />
         )}
         data={data}
+        ListFooterComponent={() => {
+          return (
+            <Calendar
+              onDayPress={({ timestamp }) => setActiveDate(new Date(timestamp))}
+              style={{
+                width: '90%',
+                marginHorizontal: '5%',
+                borderRadius: 10,
+                marginBottom: 40,
+              }}
+            />
+          );
+        }}
         renderItem={({ item, index }: { item: any; index: number }) => (
           <DayViewEvent
             key={item?.id}
