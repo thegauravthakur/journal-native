@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -26,6 +26,7 @@ export function AddTaskInput({ setData }) {
   const [titleHeight, setTitleHeight] = useState(42);
   const [descriptionHeight, setDescriptionHeight] = useState(42);
   const activeDate = useRecoilValue(activeDateState);
+  const ref = useRef(null);
   const enableEdit = isToday(activeDate);
   let check = false;
   let check2 = false;
@@ -33,6 +34,8 @@ export function AddTaskInput({ setData }) {
     <View style={Style.container}>
       {show && (
         <TextInput
+          onV
+          ref={ref}
           editable={enableEdit}
           onChangeText={e => setTitle(e)}
           multiline={true}
@@ -57,6 +60,7 @@ export function AddTaskInput({ setData }) {
       <TextInput
         editable={enableEdit}
         onChangeText={e => setDescription(e)}
+        multiline={true}
         style={{ ...Style.descriptionInput, height: descriptionHeight }}
         onContentSizeChange={e =>
           setDescriptionHeight(e.nativeEvent.contentSize.height)
@@ -64,6 +68,10 @@ export function AddTaskInput({ setData }) {
         onFocus={() => {
           check2 = true;
           setShow(true);
+          setTimeout(() => {
+            console.log(ref.current);
+            ref.current.setNativeProps({ text: title });
+          }, 10);
         }}
         onBlur={() => {
           check2 = false;
