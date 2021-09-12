@@ -52,7 +52,7 @@ export function DayViewEvent({ item, isEnd, index, setData }) {
 const Style = StyleSheet.create({
   title: {
     fontWeight: 'bold',
-    fontSize: 19,
+    fontSize: 18,
   },
   description: {
     marginTop: 5,
