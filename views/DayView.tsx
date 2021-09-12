@@ -4,17 +4,17 @@ import { DayViewEvent } from '../components/DayViewEvent';
 import { DayViewListHeader } from '../components/DayViewListHeader';
 import { useNavigation } from '@react-navigation/native';
 import Ripple from 'react-native-material-ripple';
-import { LoadingSkeleton } from '../components/LoadingSkeleton';
 import { EventSchema, ImageSchema } from '../db/EventSchema';
 import Realm from 'realm';
 import { Calendar } from 'react-native-calendars';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { activeDateState } from '../recoil/atom';
-import { startOfDay, endOfDay } from 'date-fns';
+import { startOfDay, endOfDay, format } from 'date-fns';
 
 export function DayView() {
   const navigation = useNavigation();
   const [data, setData] = useState([]);
+  const [markedDates, setMarkedDates] = useState({});
   const [activeDate, setActiveDate] = useRecoilState(activeDateState);
 
   const realm = new Realm({
@@ -32,12 +32,33 @@ export function DayView() {
       )
       .sorted('createdAt', true);
     setData(all);
+    console.log('test');
   }, [activeDate]);
+
+  useEffect(() => {
+    const Events = realm.objects('Event');
+    const set = new Set();
+    Events.forEach(event => {
+      set.add(format(event.createdAt, 'yyyy-LL-dd'));
+    });
+    const result = {};
+    set.forEach(value => {
+      result[value] = { marked: true };
+    });
+    const rest = result[format(activeDate, 'yyyy-LL-dd')];
+    result[format(activeDate, 'yyyy-LL-dd')] = { selected: true, ...rest };
+    setMarkedDates(result);
+    console.log('test');
+  }, [data]);
 
   navigation.setOptions({
     headerRight: () => (
-      <Ripple onPress={async () => {}} style={Style.ripple}>
-        <Text style={Style.ripple__button}>Logout</Text>
+      <Ripple
+        onPress={() => {
+          setActiveDate(new Date());
+        }}
+        style={Style.ripple}>
+        <Text style={Style.ripple__button}>Today</Text>
       </Ripple>
     ),
   });
@@ -53,15 +74,33 @@ export function DayView() {
         data={data}
         ListFooterComponent={() => {
           return (
-            <Calendar
-              onDayPress={({ timestamp }) => setActiveDate(new Date(timestamp))}
-              style={{
-                width: '90%',
-                marginHorizontal: '5%',
-                borderRadius: 10,
-                marginBottom: 40,
-              }}
-            />
+            <>
+              {data.length === 0 && (
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    fontSize: 17,
+                    marginBottom: 20,
+                    marginTop: -20,
+                  }}>
+                  No events found
+                </Text>
+              )}
+              <Calendar
+                enableSwipeMonths={true}
+                markedDates={markedDates}
+                current={activeDate}
+                onDayPress={({ timestamp }) =>
+                  setActiveDate(new Date(timestamp))
+                }
+                style={{
+                  width: '90%',
+                  marginHorizontal: '5%',
+                  borderRadius: 10,
+                  marginBottom: 40,
+                }}
+              />
+            </>
           );
         }}
         renderItem={({ item, index }: { item: any; index: number }) => (

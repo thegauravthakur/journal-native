@@ -1,10 +1,22 @@
 import React, { useState } from 'react';
-import { StyleSheet, TextInput, View } from 'react-native';
-import { useRecoilState } from 'recoil';
-import { descriptionInputState, titleInputState } from '../recoil/atom';
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableHighlight,
+  View,
+} from 'react-native';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import Ripple from 'react-native-material-ripple';
+import {
+  activeDateState,
+  descriptionInputState,
+  titleInputState,
+} from '../recoil/atom';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
+import { isToday } from 'date-fns';
 
 export function AddTaskInput({ setData }) {
   const navigation = useNavigation();
@@ -13,12 +25,15 @@ export function AddTaskInput({ setData }) {
   const [show, setShow] = useState(false);
   const [titleHeight, setTitleHeight] = useState(42);
   const [descriptionHeight, setDescriptionHeight] = useState(42);
+  const activeDate = useRecoilValue(activeDateState);
+  const enableEdit = isToday(activeDate);
   let check = false;
   let check2 = false;
   return (
     <View style={Style.container}>
       {show && (
         <TextInput
+          editable={enableEdit}
           onChangeText={e => setTitle(e)}
           multiline={true}
           style={{ ...Style.titleInput, height: titleHeight }}
@@ -40,6 +55,7 @@ export function AddTaskInput({ setData }) {
         />
       )}
       <TextInput
+        editable={enableEdit}
         onChangeText={e => setDescription(e)}
         style={{ ...Style.descriptionInput, height: descriptionHeight }}
         onContentSizeChange={e =>
@@ -66,10 +82,11 @@ export function AddTaskInput({ setData }) {
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            paddingHorizontal: 10,
-            paddingBottom: 5,
+            // paddingHorizontal: 10,
+            // paddingBottom: 5,
           }}>
-          <Ionicons
+          <Ripple
+            rippleCentered
             onPress={() => {
               navigation.navigate('TaskView', {
                 title,
@@ -79,10 +96,16 @@ export function AddTaskInput({ setData }) {
                 isNew: true,
               });
             }}
-            style={Style.expandIcon}
-            size={18}
-            name={'expand-outline'}
-          />
+            style={{ borderRadius: 100 }}>
+            <Ionicons
+              color={'black'}
+              onPress={() => {}}
+              style={Style.expandIcon}
+              size={18}
+              name={'expand-outline'}
+              accessibilityIgnoresInvertColors={true}
+            />
+          </Ripple>
         </View>
       )}
     </View>
@@ -113,7 +136,7 @@ const Style = StyleSheet.create({
     paddingHorizontal: 5,
   },
   expandIcon: {
-    marginRight: 10,
+    padding: 8,
   },
   pictureIcon: {},
 });

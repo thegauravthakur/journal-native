@@ -43,52 +43,71 @@ export function TaskView({ route }) {
     headerRight: () => (
       <Ripple
         onPress={async () => {
-          setData(data => {
-            if (!isNew) {
-              const Event = realm.objects('Event');
-              const target = Event.filtered(`_id == "${_id}"`);
-              realm.write(() => {
-                target[0].title = inputTitle;
-                target[0].description = inputDescription;
-                for (let i = 0; i < images.length; i++) {
-                  if (!images[i]._id) {
+          if (
+            inputTitle.length > 0 ||
+            inputDescription.length > 0 ||
+            images.length > 0
+          ) {
+            setData(() => {
+              if (!isNew) {
+                const Event = realm.objects('Event');
+                const target = Event.filtered(`_id == "${_id}"`);
+
+                //
+                const Image = target[0].images;
+                const imagesToDelete = Image.filter(image => {
+                  const hasImage = images.findIndex(
+                    img => img._id === image._id,
+                  );
+                  return image._id && hasImage === -1;
+                });
+
+                //
+                realm.write(() => {
+                  realm.delete(imagesToDelete);
+                  target[0].title = inputTitle;
+                  target[0].description = inputDescription;
+                  for (let i = 0; i < images.length; i++) {
+                    if (!images[i]._id) {
+                      const image = realm.create('Image', {
+                        _id: uuid.v4(),
+                        url: images[i].uri,
+                      });
+                      target[0].images.push(image);
+                    }
+                  }
+                });
+              } else {
+                realm.write(() => {
+                  const Event = realm.create('Event', {
+                    _id: uuid.v4(),
+                    title: inputTitle,
+                    description: inputDescription,
+                    createdAt: new Date(),
+                  });
+
+                  for (let i = 0; i < images.length; i++) {
                     const image = realm.create('Image', {
                       _id: uuid.v4(),
                       url: images[i].uri,
                     });
-                    target[0].images.push(image);
+                    Event.images.push(image);
                   }
-                }
-              });
-            } else {
-              realm.write(() => {
-                const Event = realm.create('Event', {
-                  _id: uuid.v4(),
-                  title: inputTitle,
-                  description: inputDescription,
-                  createdAt: new Date(),
                 });
-
-                for (let i = 0; i < images.length; i++) {
-                  const image = realm.create('Image', {
-                    _id: uuid.v4(),
-                    url: images[i].uri,
-                  });
-                  Event.images.push(image);
-                }
-              });
-            }
-            setTitle('');
-            setDescription('');
-            return realm
-              .objects('Event')
-              .filtered(
-                'createdAt >= $0 && createdAt <= $1',
-                startOfDay(activeDate),
-                endOfDay(activeDate),
-              )
-              .sorted('createdAt', true);
-          });
+              }
+              setTitle('');
+              setDescription('');
+              return realm
+                .objects('Event')
+                .filtered(
+                  'createdAt >= $0 && createdAt <= $1',
+                  startOfDay(activeDate),
+                  endOfDay(activeDate),
+                )
+                .sorted('createdAt', true);
+            });
+          }
+          console.log('images length', realm.objects('Image').length);
           navigation.goBack();
         }}
         style={Style.ripple}>
@@ -98,26 +117,28 @@ export function TaskView({ route }) {
   });
 
   const onDeleteHandler = async () => {
-    setData(data => {
-      const Event = realm.objects('Event');
-      let target = Event.filtered(`_id == "${_id}"`);
-      const Image = target[0].images;
-      const imagesToDelete = Image.filter(image => image._id);
+    if (!isNew) {
+      setData(() => {
+        const Event = realm.objects('Event');
+        let target = Event.filtered(`_id == "${_id}"`);
+        const Image = target[0].images;
+        const imagesToDelete = Image.filter(image => image._id);
 
-      realm.write(() => {
-        realm.delete(imagesToDelete);
-        realm.delete(target);
+        realm.write(() => {
+          realm.delete(imagesToDelete);
+          realm.delete(target);
+        });
+
+        return realm
+          .objects('Event')
+          .filtered(
+            'createdAt >= $0 && createdAt <= $1',
+            startOfDay(activeDate),
+            endOfDay(activeDate),
+          )
+          .sorted('createdAt', true);
       });
-
-      return realm
-        .objects('Event')
-        .filtered(
-          'createdAt >= $0 && createdAt <= $1',
-          startOfDay(activeDate),
-          endOfDay(activeDate),
-        )
-        .sorted('createdAt', true);
-    });
+    }
     navigation.goBack();
   };
 
@@ -153,7 +174,8 @@ export function TaskView({ route }) {
         <View style={Style.footerWrapper}>
           <View style={Style.footerFirstHalf}>
             <Icon style={Style.gifIcon} size={18} name={'gif'} />
-            <Icon
+            <Ripple
+              rippleCentered
               onPress={() => {
                 if (images.length < 4) {
                   navigation.navigate('ImageGallery', {
@@ -162,17 +184,16 @@ export function TaskView({ route }) {
                   });
                 }
               }}
-              style={Style.pictureIcon}
-              size={27}
-              name={'photo'}
-            />
+              style={{ borderRadius: 100 }}>
+              <Icon style={Style.pictureIcon} size={27} name={'photo'} />
+            </Ripple>
           </View>
-          <Icon
+          <Ripple
+            rippleCentered
             onPress={onDeleteHandler}
-            style={Style.deleteIcon}
-            size={25}
-            name={'delete'}
-          />
+            style={{ borderRadius: 100 }}>
+            <Icon style={Style.deleteIcon} size={25} name={'delete'} />
+          </Ripple>
         </View>
       </View>
     </View>
@@ -219,7 +240,7 @@ const Style = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 10,
-    paddingVertical: 10,
+    marginVertical: 5,
   },
   footerFirstHalf: {
     flexDirection: 'row',
@@ -228,11 +249,13 @@ const Style = StyleSheet.create({
   },
   deleteIcon: {
     borderLeftWidth: 1,
-    paddingLeft: 10,
+    padding: 10,
   },
   gifIcon: {
     borderWidth: 1,
-    marginRight: 20,
+    marginHorizontal: 10,
   },
-  pictureIcon: {},
+  pictureIcon: {
+    padding: 10,
+  },
 });
