@@ -13,6 +13,8 @@ import Ripple from 'react-native-material-ripple';
 import { RecentImagePicker } from '../components/RecentImagePicker';
 import { SelectedImages } from '../components/SelectedImages';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
+// import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+// import ImagePicker from 'react-native-image-crop-picker';
 import uuid from 'react-native-uuid';
 import {
   activeDateState,
@@ -177,12 +179,33 @@ export function TaskView({ route }) {
             <Ripple
               rippleCentered
               onPress={() => {
+                const limit = 4 - images.length;
                 if (images.length < 4) {
                   navigation.navigate('ImageGallery', {
                     setImages,
-                    images,
+                    chooseLimit: limit,
                   });
                 }
+                // --
+                // const limit = 4 - images.length;
+                // ImagePicker.openPicker({
+                //   multiple: true,
+                //   maxFiles: limit,
+                //   includeBase64: true,
+                //   mediaType: 'photo',
+                // }).then(image => {
+                //   const choosenImages = [];
+                //   image.forEach(img => {
+                //     choosenImages.push({
+                //       uri: `data:${img.mime};base64,${img.data}`,
+                //     });
+                //   });
+                //   const finalChoosenImages = [];
+                //   for (let i = 0; i < choosenImages.length && i < limit; i++) {
+                //     finalChoosenImages.push(choosenImages[i]);
+                //   }
+                //   setImages([...images, ...finalChoosenImages]);
+                // });
               }}
               style={{ borderRadius: 100 }}>
               <Icon style={Style.pictureIcon} size={27} name={'photo'} />

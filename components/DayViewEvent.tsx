@@ -27,7 +27,7 @@ export function DayViewEvent({ item, isEnd, index, setData }) {
         <Text style={Style.date}>
           {isToday(createdAt)
             ? timeAgo.format(createdAt)
-            : format(new Date(createdAt), 'do LLL, yyyy')}
+            : `${format(new Date(createdAt), 'p')}`}
         </Text>
       </View>
       <Ripple
@@ -53,6 +53,7 @@ const Style = StyleSheet.create({
   title: {
     fontWeight: 'bold',
     fontSize: 18,
+    color: '#374151',
   },
   description: {
     marginTop: 5,
@@ -62,7 +63,8 @@ const Style = StyleSheet.create({
   },
   date: {
     marginTop: 10,
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
+    color: '#4B5563',
   },
   container: {
     marginLeft: 20,

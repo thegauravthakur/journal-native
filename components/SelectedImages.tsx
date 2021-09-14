@@ -9,12 +9,15 @@ import {
 import Image from 'react-native-scalable-image';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import React, { useContext, useEffect, useState } from 'react';
+import ImagePicker from 'react-native-image-crop-picker';
 
 export function SelectedImages({ images, setImages }) {
   return (
     <View>
       {images.length === 1 && (
-        <View style={Style.imgContainer}>
+        <View
+          onMagicTap={() => console.log('touch')}
+          style={Style.imgContainer}>
           <Image
             component={Img}
             style={Style.image}

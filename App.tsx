@@ -8,10 +8,9 @@ import {
   DrawerItemList,
 } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
-import { Modal, Text } from 'react-native';
-import BackupRestoreModal from './components/BackupRestoreModal';
 import ModalTester from './components/BackupRestoreModal';
 import { useState } from 'react';
+import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 function App() {
   const Drawer = createDrawerNavigator();
@@ -29,7 +28,12 @@ function App() {
           defaultScreenOptions={{ headerShown: false }}
           drawerContent={props => CustomDrawerContent(props, setModalVisible)}>
           <Drawer.Screen
-            options={{ headerShown: false }}
+            options={{
+              headerShown: false,
+              drawerIcon: ({ color, size }) => (
+                <MaterialIcon color={color} name={'home'} size={size} />
+              ),
+            }}
             name='Home'
             component={NavigationLayer}
           />
@@ -44,7 +48,10 @@ function CustomDrawerContent(props, setModalVisible) {
     <DrawerContentScrollView {...props}>
       <DrawerItemList {...props} />
       <DrawerItem
-        label='Backup / Resotre'
+        icon={({ color, size }) => (
+          <MaterialIcon size={size} color={color} name={'backup-restore'} />
+        )}
+        label='Backup | Restore'
         onPress={() => setModalVisible(true)}
       />
     </DrawerContentScrollView>

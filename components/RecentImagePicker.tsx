@@ -10,7 +10,7 @@ import {
   View,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import ImgToBase64 from 'react-native-image-base64';
+import RNFS from 'react-native-fs';
 
 export function RecentImagePicker({ setImage }) {
   const [photos, setPhotos] = useState<PhotoIdentifier[]>([]);
@@ -37,9 +37,7 @@ export function RecentImagePicker({ setImage }) {
               key={p.node.image.uri}
               style={{ ...Style.image }}
               onPress={async () => {
-                const base64 = await ImgToBase64.getBase64String(
-                  p.node.image.uri,
-                );
+                const base64 = await RNFS.readFile(p.node.image.uri, 'base64');
                 setImage(images => {
                   const temp = [...images];
                   temp.push({

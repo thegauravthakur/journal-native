@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Image, Text, StyleSheet, TouchableHighlight } from 'react-native';
+import {
+  Image,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  Button,
+} from 'react-native';
 import CameraRoll, {
   PhotoIdentifier,
 } from '@react-native-community/cameraroll';
@@ -7,7 +14,9 @@ import { FlatGrid } from 'react-native-super-grid';
 import { useNavigation } from '@react-navigation/native';
 import RNPickerSelect from 'react-native-picker-select';
 import Ripple from 'react-native-material-ripple';
-import ImgToBase64 from 'react-native-image-base64';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import RNFS from 'react-native-fs';
 
 const pickerStyle = {
   inputIOS: {
@@ -37,10 +46,12 @@ const pickerStyle = {
   },
 };
 const ImageGallery = ({ route }) => {
-  const { setImages, images } = route.params;
+  const { setImages, chooseLimit } = route.params;
+  const [mode, setMode] = useState('single');
   const [photos, setPhotos] = useState<PhotoIdentifier[]>([]);
   const [albums, setAlbums] = useState<any[]>([]);
   const [selectedAlbum, setSelectedAlbum] = useState('');
+  const [choosenImages, setChoosenImages] = useState<string[]>([]);
 
   useEffect(() => {
     CameraRoll.getAlbums({ assetType: 'Photos' }).then(d => {
@@ -68,56 +79,144 @@ const ImageGallery = ({ route }) => {
   }, [selectedAlbum]);
   const navigation = useNavigation();
   navigation.setOptions({
+    title: '',
     headerRight: () => (
-      <RNPickerSelect
-        placeholder={{ label: 'All Images', value: null }}
-        style={pickerStyle}
-        useNativeAndroidPickerStyle={false}
-        modalProps={{ style: { backgroundColor: 'red' } }}
-        onValueChange={value => setSelectedAlbum(value ? value.title : '')}
-        items={albums}>
-        <Ripple style={Style.ripple}>
-          <Text>{'Choose Album'}</Text>
-        </Ripple>
-      </RNPickerSelect>
+      <Ripple
+        onPress={() => {
+          const promiseToResolve = [];
+          choosenImages.forEach(image => {
+            const promise = RNFS.readFile(image, 'base64');
+            promiseToResolve.push(promise);
+          });
+          Promise.all(promiseToResolve)
+            .then(data => {
+              const finalImages = [];
+              data.forEach(img =>
+                finalImages.push({ uri: 'data:image/jpg;base64,' + img }),
+              );
+              setImages(prevImages => [...prevImages, ...finalImages]);
+            })
+            .then(() => navigation.goBack());
+        }}
+        style={Style.ripple}>
+        <Text>Submit</Text>
+      </Ripple>
     ),
-    title: selectedAlbum === '' ? 'All Images' : selectedAlbum,
+    headerLeft: () => (
+      <View
+        style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 5 }}>
+        <Icon
+          onPress={() => navigation.goBack()}
+          style={{ padding: 10, marginRight: 5 }}
+          size={25}
+          name={'keyboard-backspace'}
+        />
+        <RNPickerSelect
+          placeholder={{ label: 'All Images', value: null }}
+          style={pickerStyle}
+          useNativeAndroidPickerStyle={false}
+          modalProps={{ style: { backgroundColor: 'red' } }}
+          onValueChange={value => setSelectedAlbum(value ? value.title : '')}
+          items={albums}>
+          <Ripple style={Style.ripple}>
+            <Text>{selectedAlbum === '' ? 'All Images' : selectedAlbum}</Text>
+            <Icon
+              style={{ marginLeft: 3 }}
+              size={20}
+              name={'keyboard-arrow-down'}
+            />
+          </Ripple>
+        </RNPickerSelect>
+      </View>
+    ),
   });
   return (
-    <FlatGrid
-      spacing={5}
-      data={photos}
-      itemDimension={100}
-      renderItem={({ item }) => (
-        <TouchableHighlight
-          disabled={
-            images.filter(img => img.uri === item.node.image.uri).length > 0
-          }
-          style={{ ...Style.image }}
-          onPress={async () => {
-            const base64 = await ImgToBase64.getBase64String(
-              item.node.image.uri,
-            );
-            setImages(images => {
-              const temp = [...images];
-              temp.push({ uri: 'data:image/jpg;base64,' + base64 });
-              return temp;
-            });
-            navigation.goBack();
-          }}>
-          <Image
-            style={{
-              ...Style.image,
-              ...(images.filter(img => img.uri === item.node.image.uri).length >
-                0 && {
-                opacity: 0.5,
-              }),
+    <>
+      <FlatGrid
+        spacing={5}
+        data={photos}
+        itemDimension={100}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={{ ...Style.image }}
+            onLongPress={() => {
+              setMode('multi');
+              const temp = [...choosenImages, item.node.image.uri];
+              setChoosenImages(temp);
             }}
-            source={{ uri: item.node.image.uri }}
-          />
-        </TouchableHighlight>
-      )}
-    />
+            onPress={async () => {
+              console.log(item.node);
+              const checkIfAlredySelected =
+                choosenImages.findIndex(img => img === item.node.image.uri) >
+                -1;
+              console.log(checkIfAlredySelected);
+              if (mode === 'single') {
+                if (chooseLimit > choosenImages.length) {
+                  const base64 = await RNFS.readFile(
+                    item.node.image.uri,
+                    'base64',
+                  );
+                  // const base64 = await ImgToBase64.getBase64String(
+                  //   item.node.image.uri,
+                  // );
+                  setImages(images => {
+                    const temp = [...images];
+                    temp.push({
+                      uri: `data:${item.node.type};base64,` + base64,
+                    });
+                    return temp;
+                  });
+                  navigation.goBack();
+                }
+              } else {
+                if (checkIfAlredySelected) {
+                  const removedItem = choosenImages.filter(
+                    img => img !== item.node.image.uri,
+                  );
+                  setChoosenImages(removedItem);
+                  if (removedItem.length === 0) {
+                    setMode('single');
+                  }
+                } else if (chooseLimit > choosenImages.length) {
+                  console.log('not present');
+                  const temp = [...choosenImages, item.node.image.uri];
+                  setChoosenImages(temp);
+                }
+              }
+            }}>
+            <View>
+              <Image
+                style={{
+                  ...Style.image,
+                  ...(choosenImages.filter(img => img === item.node.image.uri)
+                    .length > 0 && {
+                    opacity: 0.4,
+                  }),
+                }}
+                source={{ uri: item.node.image.uri }}
+              />
+              {choosenImages.findIndex(img => img === item.node.image.uri) >
+                -1 && (
+                <MaterialIcon
+                  style={{
+                    position: 'absolute',
+                    alignSelf: 'center',
+                    top: 40,
+                    // top: 0,
+                    // left: 0,
+                    // right: 0,
+                    // bottom: 0,
+                  }}
+                  color={'green'}
+                  size={40}
+                  name={'checkbox-marked-circle'}
+                />
+              )}
+            </View>
+          </TouchableOpacity>
+        )}
+      />
+    </>
   );
 };
 export default ImageGallery;
@@ -133,5 +232,7 @@ const Style = StyleSheet.create({
     paddingHorizontal: 10,
     borderWidth: 1,
     borderRadius: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
