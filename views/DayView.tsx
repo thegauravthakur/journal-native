@@ -11,10 +11,11 @@ import { useRecoilState } from 'recoil';
 import { activeDateState } from '../recoil/atom';
 import { startOfDay, endOfDay, format } from 'date-fns';
 import { GIPHY_KEY } from 'react-native-dotenv';
+import { IEvent } from './types/DayView.types';
 
 export function DayView() {
   const navigation = useNavigation();
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<IEvent[]>([]);
   const [markedDates, setMarkedDates] = useState({});
   const [activeDate, setActiveDate] = useRecoilState(activeDateState);
 
@@ -26,7 +27,7 @@ export function DayView() {
   useEffect(() => {
     console.log(GIPHY_KEY);
     const all = realm
-      .objects('Event')
+      .objects<IEvent[]>('Event')
       .filtered(
         'createdAt >= $0 && createdAt <= $1',
         startOfDay(activeDate),

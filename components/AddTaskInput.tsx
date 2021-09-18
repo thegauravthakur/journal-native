@@ -1,11 +1,5 @@
 import React, { useRef, useState } from 'react';
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableHighlight,
-  View,
-} from 'react-native';
+import { StyleSheet, TextInput, View } from 'react-native';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import Ripple from 'react-native-material-ripple';
 import {
@@ -13,20 +7,20 @@ import {
   descriptionInputState,
   titleInputState,
 } from '../recoil/atom';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { isToday } from 'date-fns';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 export function AddTaskInput({ setData }) {
-  const navigation = useNavigation();
+  const navigation = useNavigation<StackNavigationProp<any>>(); //todo
   const [title, setTitle] = useRecoilState(titleInputState);
   const [description, setDescription] = useRecoilState(descriptionInputState);
   const [show, setShow] = useState(false);
   const [titleHeight, setTitleHeight] = useState(42);
   const [descriptionHeight, setDescriptionHeight] = useState(42);
   const activeDate = useRecoilValue(activeDateState);
-  const ref = useRef(null);
+  const ref = useRef<TextInput>(null);
   const enableEdit = isToday(activeDate);
   let check = false;
   let check2 = false;
@@ -34,7 +28,6 @@ export function AddTaskInput({ setData }) {
     <View style={Style.container}>
       {show && (
         <TextInput
-          onV
           ref={ref}
           editable={enableEdit}
           onChangeText={e => setTitle(e)}
@@ -47,13 +40,10 @@ export function AddTaskInput({ setData }) {
           onBlur={() => {
             check = false;
             setTimeout(() => {
-              if (!check2) {
-                setShow(false);
-              }
+              if (!check2) setShow(false);
             }, 10);
           }}
           placeholder={'Title'}
-          // style={Style.titleInput}
           placeholderTextColor={'black'}
         />
       )}
@@ -69,16 +59,13 @@ export function AddTaskInput({ setData }) {
           check2 = true;
           setShow(true);
           setTimeout(() => {
-            console.log(ref.current);
-            ref.current.setNativeProps({ text: title });
+            if (ref.current) ref.current.setNativeProps({ text: title });
           }, 10);
         }}
         onBlur={() => {
           check2 = false;
           setTimeout(() => {
-            if (!check) {
-              setShow(false);
-            }
+            if (!check) setShow(false);
           }, 10);
         }}
         placeholder={'Take a note'}

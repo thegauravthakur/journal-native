@@ -1,12 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Image,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  Button,
-} from 'react-native';
+import { Image, Text, StyleSheet, TouchableOpacity, View } from 'react-native';
 import CameraRoll, {
   PhotoIdentifier,
 } from '@react-native-community/cameraroll';
@@ -17,6 +10,7 @@ import Ripple from 'react-native-material-ripple';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { reduceSingleImageSize } from '../utils/imageManipulatioin';
+import { IImage } from './types/ImageGallery.types';
 
 const pickerStyle = {
   inputIOS: {
@@ -51,7 +45,7 @@ const ImageGallery = ({ route }) => {
   const [photos, setPhotos] = useState<PhotoIdentifier[]>([]);
   const [albums, setAlbums] = useState<any[]>([]);
   const [selectedAlbum, setSelectedAlbum] = useState('');
-  const [choosenImages, setChoosenImages] = useState<string[]>([]);
+  const [choosenImages, setChoosenImages] = useState<IImage[]>([]);
 
   useEffect(() => {
     CameraRoll.getAlbums({ assetType: 'Photos' }).then(d => {
@@ -83,14 +77,15 @@ const ImageGallery = ({ route }) => {
     headerRight: () => (
       <Ripple
         onPress={() => {
-          const promiseToResolve = [];
+          const promiseToResolve: Promise<{ uri: string }>[] = [];
           choosenImages.forEach(image => {
             const promise = reduceSingleImageSize(image.uri, image.type);
             promiseToResolve.push(promise);
           });
+
           Promise.all(promiseToResolve)
             .then(data => {
-              const finalImages = [];
+              const finalImages: { uri: string }[] = [];
               data.forEach(img => finalImages.push(img));
               setImages(prevImages => [...prevImages, ...finalImages]);
             })
@@ -165,22 +160,18 @@ const ImageGallery = ({ route }) => {
                   });
                   navigation.goBack();
                 }
-              } else {
-                if (checkIfAlredySelected) {
-                  const removedItem = choosenImages.filter(
-                    img => img.uri !== item.node.image.uri,
-                  );
-                  setChoosenImages(removedItem);
-                  if (removedItem.length === 0) {
-                    setMode('single');
-                  }
-                } else if (chooseLimit > choosenImages.length) {
-                  const temp = [
-                    ...choosenImages,
-                    { uri: item.node.image.uri, type: item.node.type },
-                  ];
-                  setChoosenImages(temp);
-                }
+              } else if (checkIfAlredySelected) {
+                const removedItem = choosenImages.filter(
+                  img => img.uri !== item.node.image.uri,
+                );
+                setChoosenImages(removedItem);
+                if (removedItem.length === 0) setMode('single');
+              } else if (chooseLimit > choosenImages.length) {
+                const temp = [
+                  ...choosenImages,
+                  { uri: item.node.image.uri, type: item.node.type },
+                ];
+                setChoosenImages(temp);
               }
             }}>
             <View>
@@ -202,10 +193,6 @@ const ImageGallery = ({ route }) => {
                     position: 'absolute',
                     alignSelf: 'center',
                     top: 40,
-                    // top: 0,
-                    // left: 0,
-                    // right: 0,
-                    // bottom: 0,
                   }}
                   color={'green'}
                   size={40}

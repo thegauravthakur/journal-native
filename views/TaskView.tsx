@@ -63,7 +63,7 @@ export function TaskView({ route }) {
   useEffect(() => {
     const handler: GiphyDialogMediaSelectEventHandler = e => {
       setSpinner({ visible: true, textContent: 'Loading...' });
-      if (images.length < 4) {
+      if (images.length < 4)
         RNFS.downloadFile({
           // fromUrl: e.media.data.images.downsized_medium.url,
           fromUrl: e.media.data.images.downsized.url,
@@ -87,7 +87,6 @@ export function TaskView({ route }) {
               });
           })
           .catch(() => GiphyDialog.hide());
-      }
     };
     const listener = GiphyDialog.addListener(
       GiphyDialogEvent.MediaSelected,
@@ -106,7 +105,7 @@ export function TaskView({ route }) {
             inputTitle.length > 0 ||
             inputDescription.length > 0 ||
             images.length > 0
-          ) {
+          )
             setData(() => {
               if (!isNew) {
                 const Event = realm.objects('Event');
@@ -124,7 +123,7 @@ export function TaskView({ route }) {
                   realm.delete(imagesToDelete);
                   target[0].title = inputTitle;
                   target[0].description = inputDescription;
-                  for (let i = 0; i < images.length; i++) {
+                  for (let i = 0; i < images.length; i++)
                     if (!images[i]._id) {
                       const image = realm.create('Image', {
                         _id: uuid.v4(),
@@ -132,9 +131,8 @@ export function TaskView({ route }) {
                       });
                       target[0].images.push(image);
                     }
-                  }
                 });
-              } else {
+              } else
                 realm.write(() => {
                   const Event = realm.create('Event', {
                     _id: uuid.v4(),
@@ -151,7 +149,7 @@ export function TaskView({ route }) {
                     Event.images.push(image);
                   }
                 });
-              }
+
               setTitle('');
               setDescription('');
               return realm
@@ -163,7 +161,7 @@ export function TaskView({ route }) {
                 )
                 .sorted('createdAt', true);
             });
-          }
+
           console.log('images length', realm.objects('Image').length);
           navigation.goBack();
         }}
@@ -174,7 +172,7 @@ export function TaskView({ route }) {
   });
 
   const onDeleteHandler = async () => {
-    if (!isNew) {
+    if (!isNew)
       setData(() => {
         const Event = realm.objects('Event');
         let target = Event.filtered(`_id == "${_id}"`);
@@ -195,7 +193,7 @@ export function TaskView({ route }) {
           )
           .sorted('createdAt', true);
       });
-    }
+
     navigation.goBack();
   };
 
@@ -229,12 +227,11 @@ export function TaskView({ route }) {
               rippleCentered
               onPress={() => {
                 const limit = 4 - images.length;
-                if (images.length < 4) {
+                if (images.length < 4)
                   navigation.navigate('ImageGallery', {
                     setImages,
                     chooseLimit: limit,
                   });
-                }
               }}
               style={{ borderRadius: 100 }}>
               <Icon style={Style.pictureIcon} size={27} name={'photo'} />

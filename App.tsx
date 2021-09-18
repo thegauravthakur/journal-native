@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { RecoilRoot, useRecoilValue } from 'recoil';
+import { RecoilRoot } from 'recoil';
 import NavigationLayer from './components/NavigationLayer';
 import {
   createDrawerNavigator,
@@ -9,7 +9,7 @@ import {
 } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import ModalTester from './components/BackupRestoreModal';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 function App() {

@@ -6,6 +6,7 @@ module.exports = {
     'jsx-quotes': ['error', 'prefer-single'],
     'react-native/no-inline-styles': 0,
     'no-trailing-spaces': 0,
+    curly: ['error', 'multi'],
   },
   plugins: ['only-warn'],
 };

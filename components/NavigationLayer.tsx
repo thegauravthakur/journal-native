@@ -3,14 +3,19 @@ import ImageGallery from '../views/ImageGallery';
 import { DayView } from '../views/DayView';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import * as React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { useRecoilValue } from 'recoil';
 import { spinnerState } from '../recoil/atom';
 
+type RootStackParamList = {
+  DayView: undefined;
+  TaskView: undefined;
+  ImageGallery: undefined;
+};
+
 export default function NavigationLayer({ navigation }) {
-  const Stack = createStackNavigator();
+  const Stack = createStackNavigator<RootStackParamList>();
   const spinnerValue = useRecoilValue(spinnerState);
   return (
     <>
