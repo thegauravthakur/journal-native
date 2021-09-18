@@ -3,14 +3,11 @@ import {
   Image as Img,
   StyleSheet,
   View,
-  Text,
   Modal,
   TouchableOpacity,
 } from 'react-native';
 import Image from 'react-native-scalable-image';
-import React, { useEffect, useState } from 'react';
-import { useRecoilState } from 'recoil';
-import { format } from 'date-fns';
+import React, { useState } from 'react';
 import ImageViewer from 'react-native-image-zoom-viewer';
 
 export function ImageCollage({ images }) {
@@ -31,19 +28,19 @@ export function ImageCollage({ images }) {
       </Modal>
       <View>
         {images?.length === 1 && (
-          <View style={Style.singleImgContainer}>
+          <TouchableOpacity
+            style={Style.singleImgContainer}
+            onPress={() => {
+              setCurrentIndex(0);
+              setBigImageModal(true);
+            }}>
             <Image
-              onPress={() => {
-                setCurrentIndex(0);
-                setBigImageModal(true);
-              }}
               component={Img}
               style={Style.singleImage}
-              width={Dimensions.get('window').width - 60}
+              width={Dimensions.get('window').width - 50}
               source={{ uri: images[0].url }}
-              height={238}
             />
-          </View>
+          </TouchableOpacity>
         )}
         {images?.length === 2 && (
           <View style={Style.twoImageOuterWrapper}>
@@ -55,6 +52,7 @@ export function ImageCollage({ images }) {
                 }}>
                 <Img
                   style={{
+                    overlayColor: '#F2F2F2',
                     width: '100%',
                     height: undefined,
                     aspectRatio: 1,
@@ -73,6 +71,7 @@ export function ImageCollage({ images }) {
                 }}>
                 <Img
                   style={{
+                    overlayColor: '#F2F2F2',
                     width: '100%',
                     height: undefined,
                     aspectRatio: 1,
@@ -97,6 +96,7 @@ export function ImageCollage({ images }) {
                   }}>
                   <Img
                     style={{
+                      overlayColor: '#F2F2F2',
                       width: '100%',
                       height: undefined,
                       aspectRatio: 1,
@@ -114,6 +114,7 @@ export function ImageCollage({ images }) {
                   }}>
                   <Img
                     style={{
+                      overlayColor: '#F2F2F2',
                       width: '100%',
                       height: undefined,
                       aspectRatio: 1,
@@ -133,6 +134,7 @@ export function ImageCollage({ images }) {
                 }}>
                 <Img
                   style={{
+                    overlayColor: '#F2F2F2',
                     width: '100%',
                     height: undefined,
                     aspectRatio: 2,
@@ -156,6 +158,7 @@ export function ImageCollage({ images }) {
                   }}>
                   <Img
                     style={{
+                      overlayColor: '#F2F2F2',
                       width: '100%',
                       height: undefined,
                       aspectRatio: 1,
@@ -173,6 +176,7 @@ export function ImageCollage({ images }) {
                   }}>
                   <Img
                     style={{
+                      overlayColor: '#F2F2F2',
                       width: '100%',
                       height: undefined,
                       aspectRatio: 1,
@@ -193,6 +197,7 @@ export function ImageCollage({ images }) {
                   }}>
                   <Img
                     style={{
+                      overlayColor: '#F2F2F2',
                       width: '100%',
                       height: undefined,
                       aspectRatio: 1,
@@ -210,6 +215,7 @@ export function ImageCollage({ images }) {
                   }}>
                   <Img
                     style={{
+                      overlayColor: '#F2F2F2',
                       width: '100%',
                       height: undefined,
                       aspectRatio: 1,
@@ -232,6 +238,9 @@ const Style = StyleSheet.create({
   singleImage: {
     marginTop: 20,
     borderRadius: 15,
+    overlayColor: '#F2F2F2',
+    // borderTopRightRadius: 15,
+    // borderBottomRightRadius: 15,
   },
   singleImgContainer: {
     flex: 1,

@@ -10,6 +10,7 @@ import { Calendar } from 'react-native-calendars';
 import { useRecoilState } from 'recoil';
 import { activeDateState } from '../recoil/atom';
 import { startOfDay, endOfDay, format } from 'date-fns';
+import { GIPHY_KEY } from 'react-native-dotenv';
 
 export function DayView() {
   const navigation = useNavigation();
@@ -23,6 +24,7 @@ export function DayView() {
   });
 
   useEffect(() => {
+    console.log(GIPHY_KEY);
     const all = realm
       .objects('Event')
       .filtered(

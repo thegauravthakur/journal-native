@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { RecoilRoot } from 'recoil';
+import { RecoilRoot, useRecoilValue } from 'recoil';
 import NavigationLayer from './components/NavigationLayer';
 import {
   createDrawerNavigator,
@@ -9,13 +9,12 @@ import {
 } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import ModalTester from './components/BackupRestoreModal';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 function App() {
   const Drawer = createDrawerNavigator();
   const [isModalVisible, setModalVisible] = useState(false);
-
   return (
     <RecoilRoot>
       <ModalTester

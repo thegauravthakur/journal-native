@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   ImageSourcePropType,
   ScrollView,
@@ -13,33 +13,90 @@ import Ripple from 'react-native-material-ripple';
 import { RecentImagePicker } from '../components/RecentImagePicker';
 import { SelectedImages } from '../components/SelectedImages';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-// import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
-// import ImagePicker from 'react-native-image-crop-picker';
 import uuid from 'react-native-uuid';
 import {
   activeDateState,
   descriptionInputState,
+  spinnerState,
   titleInputState,
 } from '../recoil/atom';
 import Realm from 'realm';
 import { EventSchema, ImageSchema } from '../db/EventSchema';
 import { endOfDay, startOfDay } from 'date-fns';
+import {
+  GiphyDialog,
+  GiphyDialogEvent,
+  GiphyDialogMediaSelectEventHandler,
+  GiphyFileExtension,
+  GiphySDK,
+  GiphyThemePreset,
+} from '@giphy/react-native-sdk';
+import RNFS from 'react-native-fs';
+import TaskViewTextInput from '../components/TaskViewTextInput';
+import { GIPHY_KEY } from 'react-native-dotenv';
 
 export function TaskView({ route }) {
-  const [titleHeight, setTitleHeight] = useState(42);
-  const [descriptionHeight, setDescriptionHeight] = useState(42);
+  const [titleHeight, setTitleHeight] = useState();
+  const [descriptionHeight, setDescriptionHeight] = useState();
   const { title, description, setData, isNew, imagesArray, _id } = route.params;
   const [inputTitle, setInputTitle] = useState(title);
+  const setSpinner = useSetRecoilState(spinnerState);
   const [inputDescription, setInputDescription] = useState(description);
   const [images, setImages] = useState<Array<ImageSourcePropType>>(imagesArray);
   const setTitle = useSetRecoilState(titleInputState);
   const setDescription = useSetRecoilState(descriptionInputState);
   const activeDate = useRecoilValue(activeDateState);
   const navigation = useNavigation();
+
   const realm = new Realm({
     path: 'myrealm2.realm',
     schema: [EventSchema, ImageSchema],
   });
+
+  useEffect(() => {
+    GiphySDK.configure({ apiKey: GIPHY_KEY });
+    GiphyDialog.configure({
+      fileType: GiphyFileExtension.GIF,
+      theme: GiphyThemePreset.Light,
+    });
+  }, []);
+
+  useEffect(() => {
+    const handler: GiphyDialogMediaSelectEventHandler = e => {
+      setSpinner({ visible: true, textContent: 'Loading...' });
+      if (images.length < 4) {
+        RNFS.downloadFile({
+          fromUrl: e.media.data.images.downsized_medium.url,
+          toFile: RNFS.DocumentDirectoryPath + '/test.gif',
+        })
+          .promise.then(() => {
+            RNFS.readFile(RNFS.DocumentDirectoryPath + '/test.gif', 'base64')
+              .then(result => {
+                setImages(img => [
+                  ...img,
+                  { uri: 'data:image/gif;base64,' + result },
+                ]);
+              })
+              .then(() => {
+                setSpinner({ visible: false, textContent: '' });
+                GiphyDialog.hide();
+              })
+              .catch(() => {
+                setSpinner({ visible: false, textContent: '' });
+                GiphyDialog.hide();
+              });
+          })
+          .catch(() => GiphyDialog.hide());
+      }
+    };
+    const listener = GiphyDialog.addListener(
+      GiphyDialogEvent.MediaSelected,
+      handler,
+    );
+    return () => {
+      listener.remove();
+    };
+  }, [images]);
 
   navigation.setOptions({
     headerRight: () => (
@@ -55,7 +112,6 @@ export function TaskView({ route }) {
                 const Event = realm.objects('Event');
                 const target = Event.filtered(`_id == "${_id}"`);
 
-                //
                 const Image = target[0].images;
                 const imagesToDelete = Image.filter(image => {
                   const hasImage = images.findIndex(
@@ -64,7 +120,6 @@ export function TaskView({ route }) {
                   return image._id && hasImage === -1;
                 });
 
-                //
                 realm.write(() => {
                   realm.delete(imagesToDelete);
                   target[0].title = inputTitle;
@@ -147,27 +202,16 @@ export function TaskView({ route }) {
   return (
     <View style={Style.container}>
       <ScrollView>
-        <TextInput
-          onChangeText={e => setInputTitle(e)}
-          defaultValue={title}
-          multiline={true}
-          style={{ ...Style.titleInput, height: titleHeight }}
-          onContentSizeChange={e =>
-            setTitleHeight(e.nativeEvent.contentSize.height)
-          }
-          placeholder={'Title'}
-          placeholderTextColor={'black'}
-        />
-        <TextInput
-          defaultValue={description}
-          multiline
-          onChangeText={e => setInputDescription(e)}
-          style={{ ...Style.descriptionInput, height: descriptionHeight }}
-          onContentSizeChange={e =>
-            setDescriptionHeight(e.nativeEvent.contentSize.height)
-          }
-          placeholder={'Take a note'}
-          placeholderTextColor={'black'}
+        <TaskViewTextInput
+          inputTitle={inputTitle}
+          setInputDescription={setInputDescription}
+          inputDescription={inputDescription}
+          setInputTitle={setInputTitle}
+          descriptionHeight={descriptionHeight}
+          setDescriptionHeight={setDescriptionHeight}
+          setTitleHeight={setTitleHeight}
+          titleHeight={titleHeight}
+          setImages={setImages}
         />
         <SelectedImages images={images} setImages={setImages} />
       </ScrollView>
@@ -175,7 +219,12 @@ export function TaskView({ route }) {
         {images.length === 0 && <RecentImagePicker setImage={setImages} />}
         <View style={Style.footerWrapper}>
           <View style={Style.footerFirstHalf}>
-            <Icon style={Style.gifIcon} size={18} name={'gif'} />
+            <Ripple
+              rippleCentered
+              onPress={() => GiphyDialog.show()}
+              style={{ borderRadius: 100 }}>
+              <Icon style={Style.gifIcon} size={18} name={'gif'} />
+            </Ripple>
             <Ripple
               rippleCentered
               onPress={() => {
@@ -186,37 +235,20 @@ export function TaskView({ route }) {
                     chooseLimit: limit,
                   });
                 }
-                // --
-                // const limit = 4 - images.length;
-                // ImagePicker.openPicker({
-                //   multiple: true,
-                //   maxFiles: limit,
-                //   includeBase64: true,
-                //   mediaType: 'photo',
-                // }).then(image => {
-                //   const choosenImages = [];
-                //   image.forEach(img => {
-                //     choosenImages.push({
-                //       uri: `data:${img.mime};base64,${img.data}`,
-                //     });
-                //   });
-                //   const finalChoosenImages = [];
-                //   for (let i = 0; i < choosenImages.length && i < limit; i++) {
-                //     finalChoosenImages.push(choosenImages[i]);
-                //   }
-                //   setImages([...images, ...finalChoosenImages]);
-                // });
               }}
               style={{ borderRadius: 100 }}>
               <Icon style={Style.pictureIcon} size={27} name={'photo'} />
             </Ripple>
           </View>
-          <Ripple
-            rippleCentered
-            onPress={onDeleteHandler}
-            style={{ borderRadius: 100 }}>
-            <Icon style={Style.deleteIcon} size={25} name={'delete'} />
-          </Ripple>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <View style={{ borderRightWidth: 1, height: 30, marginRight: 5 }} />
+            <Ripple
+              rippleCentered
+              onPress={onDeleteHandler}
+              style={{ borderRadius: 100 }}>
+              <Icon style={Style.deleteIcon} size={25} name={'delete'} />
+            </Ripple>
+          </View>
         </View>
       </View>
     </View>
@@ -271,7 +303,6 @@ const Style = StyleSheet.create({
     flex: 1,
   },
   deleteIcon: {
-    borderLeftWidth: 1,
     padding: 10,
   },
   gifIcon: {

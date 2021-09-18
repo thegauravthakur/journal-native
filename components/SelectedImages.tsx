@@ -4,20 +4,16 @@ import {
   StyleSheet,
   View,
   ScrollView,
-  Text,
 } from 'react-native';
 import Image from 'react-native-scalable-image';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import React, { useContext, useEffect, useState } from 'react';
-import ImagePicker from 'react-native-image-crop-picker';
+import React from 'react';
 
 export function SelectedImages({ images, setImages }) {
   return (
     <View>
       {images.length === 1 && (
-        <View
-          onMagicTap={() => console.log('touch')}
-          style={Style.imgContainer}>
+        <View style={Style.imgContainer}>
           <Image
             component={Img}
             style={Style.image}
@@ -40,7 +36,11 @@ export function SelectedImages({ images, setImages }) {
         <ScrollView horizontal={true} style={{ marginVertical: 20 }}>
           <View>
             <Image
-              style={{ borderRadius: 10, marginLeft: 5 }}
+              style={{
+                borderRadius: 10,
+                marginLeft: 5,
+                overlayColor: '#F2F2F2',
+              }}
               height={190}
               source={{ uri: images[0]._id ? images[0].url : images[0].uri }}
             />
@@ -65,7 +65,11 @@ export function SelectedImages({ images, setImages }) {
           </View>
           <View>
             <Image
-              style={{ borderRadius: 10, marginLeft: 5 }}
+              style={{
+                borderRadius: 10,
+                marginLeft: 5,
+                overlayColor: '#F2F2F2',
+              }}
               height={190}
               source={{ uri: images[1]._id ? images[1].url : images[1].uri }}
             />
@@ -94,6 +98,7 @@ export function SelectedImages({ images, setImages }) {
                 style={{
                   borderRadius: 10,
                   marginLeft: 5,
+                  overlayColor: '#F2F2F2',
                 }}
                 height={190}
                 source={{ uri: images[2]._id ? images[2].url : images[2].uri }}
@@ -121,7 +126,11 @@ export function SelectedImages({ images, setImages }) {
           {images[3] && (
             <View>
               <Image
-                style={{ borderRadius: 10, marginLeft: 5 }}
+                style={{
+                  borderRadius: 10,
+                  marginLeft: 5,
+                  overlayColor: '#F2F2F2',
+                }}
                 height={190}
                 source={{ uri: images[3]._id ? images[3].url : images[3].uri }}
               />
@@ -155,6 +164,7 @@ const Style = StyleSheet.create({
   image: {
     marginVertical: 20,
     borderRadius: 15,
+    overlayColor: '#F2F2F2',
   },
   imgContainer: {
     flex: 1,
