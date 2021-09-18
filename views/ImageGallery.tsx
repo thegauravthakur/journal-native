@@ -16,7 +16,7 @@ import RNPickerSelect from 'react-native-picker-select';
 import Ripple from 'react-native-material-ripple';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import RNFS from 'react-native-fs';
+import { reduceSingleImageSize } from '../utils/imageManipulatioin';
 
 const pickerStyle = {
   inputIOS: {
@@ -85,15 +85,13 @@ const ImageGallery = ({ route }) => {
         onPress={() => {
           const promiseToResolve = [];
           choosenImages.forEach(image => {
-            const promise = RNFS.readFile(image, 'base64');
+            const promise = reduceSingleImageSize(image.uri, image.type);
             promiseToResolve.push(promise);
           });
           Promise.all(promiseToResolve)
             .then(data => {
               const finalImages = [];
-              data.forEach(img =>
-                finalImages.push({ uri: 'data:image/jpg;base64,' + img }),
-              );
+              data.forEach(img => finalImages.push(img));
               setImages(prevImages => [...prevImages, ...finalImages]);
             })
             .then(() => navigation.goBack());
@@ -141,29 +139,28 @@ const ImageGallery = ({ route }) => {
             style={{ ...Style.image }}
             onLongPress={() => {
               setMode('multi');
-              const temp = [...choosenImages, item.node.image.uri];
+              const temp = [
+                ...choosenImages,
+                { uri: item.node.image.uri, type: item.node.type },
+              ];
               setChoosenImages(temp);
             }}
             onPress={async () => {
               console.log(item.node);
               const checkIfAlredySelected =
-                choosenImages.findIndex(img => img === item.node.image.uri) >
-                -1;
-              console.log(checkIfAlredySelected);
+                choosenImages.findIndex(
+                  img => img.uri === item.node.image.uri,
+                ) > -1;
+
               if (mode === 'single') {
                 if (chooseLimit > choosenImages.length) {
-                  const base64 = await RNFS.readFile(
+                  const base64 = await reduceSingleImageSize(
                     item.node.image.uri,
-                    'base64',
+                    item.node.type,
                   );
-                  // const base64 = await ImgToBase64.getBase64String(
-                  //   item.node.image.uri,
-                  // );
                   setImages(images => {
                     const temp = [...images];
-                    temp.push({
-                      uri: `data:${item.node.type};base64,` + base64,
-                    });
+                    temp.push(base64);
                     return temp;
                   });
                   navigation.goBack();
@@ -171,15 +168,17 @@ const ImageGallery = ({ route }) => {
               } else {
                 if (checkIfAlredySelected) {
                   const removedItem = choosenImages.filter(
-                    img => img !== item.node.image.uri,
+                    img => img.uri !== item.node.image.uri,
                   );
                   setChoosenImages(removedItem);
                   if (removedItem.length === 0) {
                     setMode('single');
                   }
                 } else if (chooseLimit > choosenImages.length) {
-                  console.log('not present');
-                  const temp = [...choosenImages, item.node.image.uri];
+                  const temp = [
+                    ...choosenImages,
+                    { uri: item.node.image.uri, type: item.node.type },
+                  ];
                   setChoosenImages(temp);
                 }
               }
@@ -188,14 +187,15 @@ const ImageGallery = ({ route }) => {
               <Image
                 style={{
                   ...Style.image,
-                  ...(choosenImages.filter(img => img === item.node.image.uri)
-                    .length > 0 && {
+                  ...(choosenImages.filter(
+                    img => img.uri === item.node.image.uri,
+                  ).length > 0 && {
                     opacity: 0.4,
                   }),
                 }}
                 source={{ uri: item.node.image.uri }}
               />
-              {choosenImages.findIndex(img => img === item.node.image.uri) >
+              {choosenImages.findIndex(img => img.uri === item.node.image.uri) >
                 -1 && (
                 <MaterialIcon
                   style={{

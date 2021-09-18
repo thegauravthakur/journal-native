@@ -1,10 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ImageSourcePropType,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -66,7 +65,8 @@ export function TaskView({ route }) {
       setSpinner({ visible: true, textContent: 'Loading...' });
       if (images.length < 4) {
         RNFS.downloadFile({
-          fromUrl: e.media.data.images.downsized_medium.url,
+          // fromUrl: e.media.data.images.downsized_medium.url,
+          fromUrl: e.media.data.images.downsized.url,
           toFile: RNFS.DocumentDirectoryPath + '/test.gif',
         })
           .promise.then(() => {

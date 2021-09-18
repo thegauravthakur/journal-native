@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import RNFS from 'react-native-fs';
+import { reduceSingleImageSize } from '../utils/imageManipulatioin';
 
 export function RecentImagePicker({ setImage }) {
   const [photos, setPhotos] = useState<PhotoIdentifier[]>([]);
@@ -37,12 +38,13 @@ export function RecentImagePicker({ setImage }) {
               key={p.node.image.uri}
               style={{ ...Style.image }}
               onPress={async () => {
-                const base64 = await RNFS.readFile(p.node.image.uri, 'base64');
+                const reducedImg = await reduceSingleImageSize(
+                  p.node.image.uri,
+                  p.node.type,
+                );
                 setImage(images => {
                   const temp = [...images];
-                  temp.push({
-                    uri: 'data:image/jpg;base64,' + base64,
-                  });
+                  temp.push(reducedImg);
                   return temp;
                 });
               }}>
