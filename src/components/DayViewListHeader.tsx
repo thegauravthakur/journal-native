@@ -11,19 +11,15 @@ import {
 } from '../recoil/atom';
 import { endOfDay, format, startOfDay } from 'date-fns';
 import uuid from 'react-native-uuid';
-import Realm from 'realm';
-import { EventSchema, ImageSchema } from '../db/EventSchema';
+import getRealm from '../services/realm';
 
 export function DayViewListHeader({ setData, data }) {
   const [title, setTitle] = useRecoilState(titleInputState);
   const [description, setDescription] = useRecoilState(descriptionInputState);
   const activeDate = useRecoilValue(activeDateState);
-  const realm = new Realm({
-    path: 'myrealm2.realm',
-    schema: [EventSchema, ImageSchema],
-  });
 
   const onClickHandler = async () => {
+    const realm = await getRealm();
     if (title || description) {
       realm.write(() => {
         realm.create('Event', {

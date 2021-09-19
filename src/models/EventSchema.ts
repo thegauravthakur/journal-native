@@ -1,13 +1,4 @@
-export const ImageSchema = {
-  name: 'Image',
-  properties: {
-    _id: 'string',
-    url: 'string',
-  },
-  primaryKey: '_id',
-};
-
-export const EventSchema = {
+const EventSchema = {
   name: 'Event',
   properties: {
     _id: 'string',
@@ -21,3 +12,5 @@ export const EventSchema = {
   },
   primaryKey: '_id',
 };
+
+export default EventSchema;

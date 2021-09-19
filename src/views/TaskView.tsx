@@ -20,7 +20,7 @@ import {
   titleInputState,
 } from '../recoil/atom';
 import Realm from 'realm';
-import { EventSchema, ImageSchema } from '../db/EventSchema';
+import { EventSchema, ImageSchema } from '../models/EventSchema';
 import { endOfDay, startOfDay } from 'date-fns';
 import {
   GiphyDialog,

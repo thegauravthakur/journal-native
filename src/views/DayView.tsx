@@ -4,14 +4,12 @@ import { DayViewEvent } from '../components/DayViewEvent';
 import { DayViewListHeader } from '../components/DayViewListHeader';
 import { useNavigation } from '@react-navigation/native';
 import Ripple from 'react-native-material-ripple';
-import { EventSchema, ImageSchema } from '../db/EventSchema';
-import Realm from 'realm';
 import { Calendar } from 'react-native-calendars';
 import { useRecoilState } from 'recoil';
 import { activeDateState } from '../recoil/atom';
-import { startOfDay, endOfDay, format } from 'date-fns';
-import { GIPHY_KEY } from 'react-native-dotenv';
 import { IEvent } from './types/DayView.types';
+import { getEventDataForDate } from '../services/transaction';
+import { getEventsToMarkOnCalendar } from '../utils/Calendar';
 
 export function DayView() {
   const navigation = useNavigation();
@@ -19,40 +17,16 @@ export function DayView() {
   const [markedDates, setMarkedDates] = useState({});
   const [activeDate, setActiveDate] = useRecoilState(activeDateState);
 
-  const realm = new Realm({
-    path: 'myrealm2.realm',
-    schema: [EventSchema, ImageSchema],
-  });
-
   useEffect(() => {
-    console.log(GIPHY_KEY);
-    const all = realm
-      .objects<IEvent[]>('Event')
-      .filtered(
-        'createdAt >= $0 && createdAt <= $1',
-        startOfDay(activeDate),
-        endOfDay(activeDate),
-      )
-      .sorted('createdAt', true);
-    setData(all);
-    console.log('test');
+    // @ts-ignore
+    getEventDataForDate(activeDate).then(events => setData(events));
   }, [activeDate]);
 
   useEffect(() => {
-    const Events = realm.objects('Event');
-    const set = new Set();
-    Events.forEach(event => {
-      set.add(format(event.createdAt, 'yyyy-LL-dd'));
-    });
-    const result = {};
-    set.forEach(value => {
-      result[value] = { marked: true };
-    });
-    const rest = result[format(activeDate, 'yyyy-LL-dd')];
-    result[format(activeDate, 'yyyy-LL-dd')] = { selected: true, ...rest };
-    setMarkedDates(result);
-    console.log('test');
-  }, [data]);
+    getEventsToMarkOnCalendar(activeDate).then(markedEvents =>
+      setMarkedDates(markedEvents),
+    );
+  }, [activeDate, data]);
 
   navigation.setOptions({
     headerRight: () => (
@@ -90,7 +64,7 @@ export function DayView() {
                 </Text>
               )}
               <Calendar
-                enableSwipeMonths={true}
+                enableSwipeMonths={false}
                 markedDates={markedDates}
                 current={activeDate}
                 onDayPress={({ timestamp }) =>

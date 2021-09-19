@@ -10,7 +10,7 @@ import Ripple from 'react-native-material-ripple';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { reduceSingleImageSize } from '../utils/imageManipulatioin';
-import { IImage } from './types/ImageGallery.types';
+import { IChosenImage } from './types/ImageGallery.types';
 
 const pickerStyle = {
   inputIOS: {
@@ -45,7 +45,7 @@ const ImageGallery = ({ route }) => {
   const [photos, setPhotos] = useState<PhotoIdentifier[]>([]);
   const [albums, setAlbums] = useState<any[]>([]);
   const [selectedAlbum, setSelectedAlbum] = useState('');
-  const [choosenImages, setChoosenImages] = useState<IImage[]>([]);
+  const [choosenImages, setChoosenImages] = useState<IChosenImage[]>([]);
 
   useEffect(() => {
     CameraRoll.getAlbums({ assetType: 'Photos' }).then(d => {
@@ -206,6 +206,7 @@ const ImageGallery = ({ route }) => {
     </>
   );
 };
+
 export default ImageGallery;
 
 const Style = StyleSheet.create({

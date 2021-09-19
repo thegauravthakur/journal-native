@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  Image,
   NativeModules,
   Text,
   TextInput,
@@ -8,22 +9,19 @@ import {
 } from 'react-native';
 import Modal from 'react-native-modal';
 import Realm from 'realm';
-import { EventSchema, ImageSchema } from '../db/EventSchema';
 import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
 import { useSetRecoilState } from 'recoil';
 import { spinnerState } from '../recoil/atom';
 import { zipWithPassword, unzipWithPassword } from 'react-native-zip-archive';
 import Share from 'react-native-share';
+import Event from '../models/EventSchema';
+import getRealm from '../services/realm';
 
 function ModalTester({ isModalVisible, setModalVisible }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [password, setPassword] = useState('');
   const setSpinner = useSetRecoilState(spinnerState);
-  const realm = new Realm({
-    path: 'myrealm2.realm',
-    schema: [EventSchema, ImageSchema],
-  });
 
   return (
     <Modal
@@ -74,21 +72,19 @@ function ModalTester({ isModalVisible, setModalVisible }) {
           </Text>
         )}
         <TouchableOpacity
-          onPress={() => {
+          onPress={async () => {
+            const realm = await getRealm();
             if (password.length < 4) {
               setErrorMessage(
                 'Password length should be greater than 4 characters',
               );
               return;
-            } else {
-              setErrorMessage('');
-            }
+            } else setErrorMessage('');
+
             setSpinner({ visible: true, textContent: '' });
             RNFS.exists(RNFS.DocumentDirectoryPath + '/backup')
               .then(exists => {
-                if (!exists) {
-                  RNFS.mkdir(RNFS.DocumentDirectoryPath + '/backup');
-                }
+                if (!exists) RNFS.mkdir(RNFS.DocumentDirectoryPath + '/backup');
               })
               .then(() => {
                 RNFS.copyFile(
@@ -104,7 +100,7 @@ function ModalTester({ isModalVisible, setModalVisible }) {
                 ).then(d => {
                   setSpinner({ visible: false, textContent: '' });
                   Share.open({
-                    title: 'backup db',
+                    title: 'backup models',
                     url: 'file://' + d,
                   })
                     .then(() => {
@@ -137,9 +133,8 @@ function ModalTester({ isModalVisible, setModalVisible }) {
                 'Password length should be greater than 4 characters',
               );
               return;
-            } else {
-              setErrorMessage('');
-            }
+            } else setErrorMessage('');
+
             DocumentPicker.pickSingle().then(r => {
               setSpinner({ visible: true, textContent: '' });
               RNFS.copyFile(
