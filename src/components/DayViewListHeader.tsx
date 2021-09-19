@@ -9,9 +9,10 @@ import {
   descriptionInputState,
   titleInputState,
 } from '../recoil/atom';
-import { endOfDay, format, startOfDay } from 'date-fns';
+import { format } from 'date-fns';
 import uuid from 'react-native-uuid';
 import getRealm from '../services/realm';
+import { getEventDataForDate } from '../services/transaction';
 
 export function DayViewListHeader({ setData, data }) {
   const [title, setTitle] = useRecoilState(titleInputState);
@@ -30,14 +31,7 @@ export function DayViewListHeader({ setData, data }) {
           _id: uuid.v4(),
         });
       });
-      const all = realm
-        .objects('Event')
-        .filtered(
-          'createdAt >= $0 && createdAt <= $1',
-          startOfDay(activeDate),
-          endOfDay(activeDate),
-        )
-        .sorted('createdAt', true);
+      const all = await getEventDataForDate(activeDate);
       setData(all);
       setTitle('');
       setDescription('');

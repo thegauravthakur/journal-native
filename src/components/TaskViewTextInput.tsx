@@ -1,5 +1,5 @@
-import { StyleSheet, Text, TextInput, useWindowDimensions } from 'react-native';
-import React, { useEffect } from 'react';
+import { StyleSheet, TextInput } from 'react-native';
+import React from 'react';
 
 const TaskViewTextInput = ({
   inputTitle,
@@ -10,7 +10,6 @@ const TaskViewTextInput = ({
   descriptionHeight,
   setDescriptionHeight,
   setTitleHeight,
-  setImages,
 }) => {
   return (
     <>
@@ -25,9 +24,6 @@ const TaskViewTextInput = ({
         placeholder={'Title'}
         placeholderTextColor={'black'}
       />
-      {/*<Text>*/}
-      {/*  Description heihgt: {descriptionHeight} {inputDescription.length}*/}
-      {/*</Text>*/}
       <TextInput
         value={inputDescription}
         multiline={true}

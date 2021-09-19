@@ -1,27 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import {
-  ImageSourcePropType,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ripple from 'react-native-material-ripple';
 import { RecentImagePicker } from '../components/RecentImagePicker';
 import { SelectedImages } from '../components/SelectedImages';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import uuid from 'react-native-uuid';
 import {
   activeDateState,
   descriptionInputState,
   spinnerState,
   titleInputState,
 } from '../recoil/atom';
-import Realm from 'realm';
-import { EventSchema, ImageSchema } from '../models/EventSchema';
-import { endOfDay, startOfDay } from 'date-fns';
 import {
   GiphyDialog,
   GiphyDialogEvent,
@@ -33,6 +23,15 @@ import {
 import RNFS from 'react-native-fs';
 import TaskViewTextInput from '../components/TaskViewTextInput';
 import { GIPHY_KEY } from 'react-native-dotenv';
+import {
+  createNewEvent,
+  deleteEvent,
+  getAllEvents,
+  getEventDataForDate,
+  insertAndCleanImages,
+} from '../services/transaction';
+import { StackNavigationProp } from '@react-navigation/stack';
+import getRealm from '../services/realm';
 
 export function TaskView({ route }) {
   const [titleHeight, setTitleHeight] = useState();
@@ -41,16 +40,13 @@ export function TaskView({ route }) {
   const [inputTitle, setInputTitle] = useState(title);
   const setSpinner = useSetRecoilState(spinnerState);
   const [inputDescription, setInputDescription] = useState(description);
-  const [images, setImages] = useState<Array<ImageSourcePropType>>(imagesArray);
+  const [images, setImages] = useState<{ uri: string; _id?: string }[]>(
+    imagesArray,
+  );
   const setTitle = useSetRecoilState(titleInputState);
   const setDescription = useSetRecoilState(descriptionInputState);
   const activeDate = useRecoilValue(activeDateState);
-  const navigation = useNavigation();
-
-  const realm = new Realm({
-    path: 'myrealm2.realm',
-    schema: [EventSchema, ImageSchema],
-  });
+  const navigation = useNavigation<StackNavigationProp<any>>();
 
   useEffect(() => {
     GiphySDK.configure({ apiKey: GIPHY_KEY });
@@ -65,7 +61,6 @@ export function TaskView({ route }) {
       setSpinner({ visible: true, textContent: 'Loading...' });
       if (images.length < 4)
         RNFS.downloadFile({
-          // fromUrl: e.media.data.images.downsized_medium.url,
           fromUrl: e.media.data.images.downsized.url,
           toFile: RNFS.DocumentDirectoryPath + '/test.gif',
         })
@@ -106,63 +101,28 @@ export function TaskView({ route }) {
             inputDescription.length > 0 ||
             images.length > 0
           )
-            setData(() => {
-              if (!isNew) {
-                const Event = realm.objects('Event');
-                const target = Event.filtered(`_id == "${_id}"`);
+            if (!isNew) {
+              const Event = await getAllEvents();
+              const target = Event.filtered(`_id == "${_id}"`);
 
-                const Image = target[0].images;
-                const imagesToDelete = Image.filter(image => {
-                  const hasImage = images.findIndex(
-                    img => img._id === image._id,
-                  );
-                  return image._id && hasImage === -1;
-                });
+              const Image = target[0].images;
+              // @ts-ignore
+              const imagesToDelete = Image.filter(image => {
+                const hasImage = images.findIndex(img => img._id === image._id);
+                return image._id && hasImage === -1;
+              });
+              await insertAndCleanImages(
+                imagesToDelete,
+                inputTitle,
+                inputDescription,
+                images,
+                target,
+              );
+            } else await createNewEvent(inputTitle, inputDescription, images);
 
-                realm.write(() => {
-                  realm.delete(imagesToDelete);
-                  target[0].title = inputTitle;
-                  target[0].description = inputDescription;
-                  for (let i = 0; i < images.length; i++)
-                    if (!images[i]._id) {
-                      const image = realm.create('Image', {
-                        _id: uuid.v4(),
-                        url: images[i].uri,
-                      });
-                      target[0].images.push(image);
-                    }
-                });
-              } else
-                realm.write(() => {
-                  const Event = realm.create('Event', {
-                    _id: uuid.v4(),
-                    title: inputTitle,
-                    description: inputDescription,
-                    createdAt: new Date(),
-                  });
-
-                  for (let i = 0; i < images.length; i++) {
-                    const image = realm.create('Image', {
-                      _id: uuid.v4(),
-                      url: images[i].uri,
-                    });
-                    Event.images.push(image);
-                  }
-                });
-
-              setTitle('');
-              setDescription('');
-              return realm
-                .objects('Event')
-                .filtered(
-                  'createdAt >= $0 && createdAt <= $1',
-                  startOfDay(activeDate),
-                  endOfDay(activeDate),
-                )
-                .sorted('createdAt', true);
-            });
-
-          console.log('images length', realm.objects('Image').length);
+          setTitle('');
+          setDescription('');
+          setData(await getEventDataForDate(activeDate));
           navigation.goBack();
         }}
         style={Style.ripple}>
@@ -172,28 +132,13 @@ export function TaskView({ route }) {
   });
 
   const onDeleteHandler = async () => {
-    if (!isNew)
-      setData(() => {
-        const Event = realm.objects('Event');
-        let target = Event.filtered(`_id == "${_id}"`);
-        const Image = target[0].images;
-        const imagesToDelete = Image.filter(image => image._id);
-
-        realm.write(() => {
-          realm.delete(imagesToDelete);
-          realm.delete(target);
-        });
-
-        return realm
-          .objects('Event')
-          .filtered(
-            'createdAt >= $0 && createdAt <= $1',
-            startOfDay(activeDate),
-            endOfDay(activeDate),
-          )
-          .sorted('createdAt', true);
-      });
-
+    const realm = await getRealm();
+    console.log('total images before delete: ' + realm.objects('Image').length);
+    if (!isNew) {
+      await deleteEvent(_id);
+      setData(await getEventDataForDate(activeDate));
+    }
+    console.log('total images after delete: ' + realm.objects('Image').length);
     navigation.goBack();
   };
 
@@ -209,7 +154,6 @@ export function TaskView({ route }) {
           setDescriptionHeight={setDescriptionHeight}
           setTitleHeight={setTitleHeight}
           titleHeight={titleHeight}
-          setImages={setImages}
         />
         <SelectedImages images={images} setImages={setImages} />
       </ScrollView>

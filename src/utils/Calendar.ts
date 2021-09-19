@@ -1,6 +1,5 @@
 import { format } from 'date-fns';
 import { getAllEvents } from '../services/transaction';
-import { IEvent } from '../views/types/DayView.types';
 
 export const getEventsToMarkOnCalendar = async (activeDate: Date) => {
   const allEvents = await getAllEvents();

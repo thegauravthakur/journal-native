@@ -1,6 +1,7 @@
 export interface IImage {
-  _id: 'string';
-  uri: 'string';
+  _id: string;
+  uri?: string;
+  url?: string;
 }
 
 export interface IEvent {

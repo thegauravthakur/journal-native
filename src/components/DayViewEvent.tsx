@@ -6,9 +6,10 @@ import { format, isToday } from 'date-fns';
 import { useNavigation } from '@react-navigation/native';
 import { ImageCollage } from './ImageCollage';
 import TimeAgo from 'javascript-time-ago';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 export function DayViewEvent({ item, isEnd, index, setData }) {
-  const navigation = useNavigation();
+  const navigation = useNavigation<StackNavigationProp<any>>();
   const { title, description, createdAt, images, _id } = item;
   const timeAgo = new TimeAgo('en-US');
   return (
@@ -63,7 +64,6 @@ const Style = StyleSheet.create({
   },
   date: {
     marginTop: 10,
-    // fontWeight: 'bold',
     color: '#4B5563',
   },
   container: {

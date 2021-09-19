@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  Image,
   NativeModules,
   Text,
   TextInput,
@@ -8,14 +7,12 @@ import {
   View,
 } from 'react-native';
 import Modal from 'react-native-modal';
-import Realm from 'realm';
 import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
 import { useSetRecoilState } from 'recoil';
 import { spinnerState } from '../recoil/atom';
 import { zipWithPassword, unzipWithPassword } from 'react-native-zip-archive';
 import Share from 'react-native-share';
-import Event from '../models/EventSchema';
 import getRealm from '../services/realm';
 
 function ModalTester({ isModalVisible, setModalVisible }) {
@@ -90,7 +87,7 @@ function ModalTester({ isModalVisible, setModalVisible }) {
                 RNFS.copyFile(
                   realm.path,
                   RNFS.DocumentDirectoryPath + '/backup/myrealm2.realm',
-                ).then(d => console.log('copy done'));
+                ).then(() => console.log('copy done'));
               })
               .then(() => {
                 zipWithPassword(
