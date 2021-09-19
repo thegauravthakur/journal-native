@@ -38,7 +38,7 @@ export function ImageCollage({ images }) {
               component={Img}
               style={Style.singleImage}
               width={Dimensions.get('window').width - 50}
-              source={{ uri: images[0].url }}
+              source={{ uri: images[0].uri }}
             />
           </TouchableOpacity>
         )}
@@ -59,7 +59,7 @@ export function ImageCollage({ images }) {
                     borderTopLeftRadius: 15,
                     borderBottomLeftRadius: 15,
                   }}
-                  source={{ uri: images[0].url }}
+                  source={{ uri: images[0].uri }}
                 />
               </TouchableOpacity>
             </View>
@@ -79,7 +79,7 @@ export function ImageCollage({ images }) {
                     borderBottomRightRadius: 15,
                     marginLeft: 1,
                   }}
-                  source={{ uri: images[1].url }}
+                  source={{ uri: images[1].uri }}
                 />
               </TouchableOpacity>
             </View>
@@ -102,7 +102,7 @@ export function ImageCollage({ images }) {
                       aspectRatio: 1,
                       borderTopLeftRadius: 15,
                     }}
-                    source={{ uri: images[0].url }}
+                    source={{ uri: images[0].uri }}
                   />
                 </TouchableOpacity>
               </View>
@@ -121,7 +121,7 @@ export function ImageCollage({ images }) {
                       borderTopRightRadius: 15,
                       marginLeft: 1,
                     }}
-                    source={{ uri: images[1].url }}
+                    source={{ uri: images[1].uri }}
                   />
                 </TouchableOpacity>
               </View>
@@ -141,7 +141,7 @@ export function ImageCollage({ images }) {
                     borderBottomLeftRadius: 15,
                     borderBottomRightRadius: 15,
                   }}
-                  source={{ uri: images[2].url }}
+                  source={{ uri: images[2].uri }}
                 />
               </TouchableOpacity>
             </View>
@@ -164,7 +164,7 @@ export function ImageCollage({ images }) {
                       aspectRatio: 1,
                       borderTopLeftRadius: 15,
                     }}
-                    source={{ uri: images[0].url }}
+                    source={{ uri: images[0].uri }}
                   />
                 </TouchableOpacity>
               </View>
@@ -183,7 +183,7 @@ export function ImageCollage({ images }) {
                       borderTopRightRadius: 15,
                       marginLeft: 1,
                     }}
-                    source={{ uri: images[1].url }}
+                    source={{ uri: images[1].uri }}
                   />
                 </TouchableOpacity>
               </View>
@@ -203,7 +203,7 @@ export function ImageCollage({ images }) {
                       aspectRatio: 1,
                       borderBottomLeftRadius: 15,
                     }}
-                    source={{ uri: images[2].url }}
+                    source={{ uri: images[2].uri }}
                   />
                 </TouchableOpacity>
               </View>
@@ -222,7 +222,7 @@ export function ImageCollage({ images }) {
                       borderBottomRightRadius: 15,
                       marginLeft: 1,
                     }}
-                    source={{ uri: images[3].url }}
+                    source={{ uri: images[3].uri }}
                   />
                 </TouchableOpacity>
               </View>

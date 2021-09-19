@@ -18,7 +18,7 @@ export function SelectedImages({ images, setImages }) {
             component={Img}
             style={Style.image}
             width={Dimensions.get('window').width - 40}
-            source={{ uri: images[0]._id ? images[0].url : images[0].uri }}
+            source={{ uri: images[0]._id ? images[0].uri : images[0].uri }}
           />
           <Icon
             onPress={() => {
@@ -42,7 +42,7 @@ export function SelectedImages({ images, setImages }) {
                 overlayColor: '#F2F2F2',
               }}
               height={190}
-              source={{ uri: images[0]._id ? images[0].url : images[0].uri }}
+              source={{ uri: images[0]._id ? images[0].uri : images[0].uri }}
             />
             <Icon
               onPress={() => {
@@ -71,7 +71,7 @@ export function SelectedImages({ images, setImages }) {
                 overlayColor: '#F2F2F2',
               }}
               height={190}
-              source={{ uri: images[1]._id ? images[1].url : images[1].uri }}
+              source={{ uri: images[1]._id ? images[1].uri : images[1].uri }}
             />
             <Icon
               onPress={() => {
@@ -101,7 +101,7 @@ export function SelectedImages({ images, setImages }) {
                   overlayColor: '#F2F2F2',
                 }}
                 height={190}
-                source={{ uri: images[2]._id ? images[2].url : images[2].uri }}
+                source={{ uri: images[2]._id ? images[2].uri : images[2].uri }}
               />
               <Icon
                 onPress={() => {
@@ -132,7 +132,7 @@ export function SelectedImages({ images, setImages }) {
                   overlayColor: '#F2F2F2',
                 }}
                 height={190}
-                source={{ uri: images[3]._id ? images[3].url : images[3].uri }}
+                source={{ uri: images[3]._id ? images[3].uri : images[3].uri }}
               />
               <Icon
                 onPress={() => {

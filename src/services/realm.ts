@@ -4,6 +4,7 @@ import Realm from 'realm';
 
 const getRealm = () => {
   return Realm.open({
+    path: 'myrealm2.realm',
     schema: [ImageSchema, EventSchema],
   });
 };

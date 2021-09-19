@@ -10,25 +10,28 @@ import {
   View,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import RNFS from 'react-native-fs';
 import { reduceSingleImageSize } from '../utils/imageManipulatioin';
+import { checkAndRequestPermission } from '../services/permissions';
 
 export function RecentImagePicker({ setImage }) {
   const [photos, setPhotos] = useState<PhotoIdentifier[]>([]);
-  const permission = PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE;
-  PermissionsAndroid.check(permission).then(p => console.log(p));
+
   useEffect(() => {
-    CameraRoll.getPhotos({
-      first: 10,
-      assetType: 'Photos',
-    })
-      .then(r => {
-        setPhotos(r.edges);
-      })
-      .catch(err => {
-        console.log(err);
-      });
+    checkAndRequestPermission().then(result => {
+      if (result)
+        CameraRoll.getPhotos({
+          first: 10,
+          assetType: 'Photos',
+        })
+          .then(r => {
+            setPhotos(r.edges);
+          })
+          .catch(err => {
+            console.log(err);
+          });
+    });
   }, []);
+
   return (
     <View>
       <ScrollView horizontal={true}>

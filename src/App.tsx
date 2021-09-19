@@ -9,12 +9,16 @@ import {
 } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import ModalTester from './components/BackupRestoreModal';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { checkAndRequestPermission } from './services/permissions';
 
 function App() {
   const Drawer = createDrawerNavigator();
   const [isModalVisible, setModalVisible] = useState(false);
+  useEffect(() => {
+    checkAndRequestPermission().then();
+  }, []);
   return (
     <RecoilRoot>
       <ModalTester

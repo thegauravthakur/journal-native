@@ -2,7 +2,7 @@ const Image = {
   name: 'Image',
   properties: {
     _id: 'string',
-    url: 'string',
+    uri: 'string',
   },
   primaryKey: '_id',
 };

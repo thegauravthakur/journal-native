@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
-import {
-  NativeModules,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Modal from 'react-native-modal';
 import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
@@ -14,6 +8,7 @@ import { spinnerState } from '../recoil/atom';
 import { zipWithPassword, unzipWithPassword } from 'react-native-zip-archive';
 import Share from 'react-native-share';
 import getRealm from '../services/realm';
+import RNRestart from 'react-native-restart';
 
 function ModalTester({ isModalVisible, setModalVisible }) {
   const [errorMessage, setErrorMessage] = useState('');
@@ -138,13 +133,15 @@ function ModalTester({ isModalVisible, setModalVisible }) {
                 r.uri,
                 RNFS.DocumentDirectoryPath + '/superRestore.zip',
               ).then(() => {
+                console.log('copy done!');
                 unzipWithPassword(
                   RNFS.DocumentDirectoryPath + '/' + 'superRestore.zip',
                   RNFS.DocumentDirectoryPath,
                   password,
                 ).then(() => {
+                  console.log('unzip done');
                   setSpinner({ visible: true, textContent: '' });
-                  NativeModules.DevSettings.reload();
+                  RNRestart.Restart();
                 });
               });
             });
