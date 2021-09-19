@@ -13,6 +13,10 @@ import ImageViewer from 'react-native-image-zoom-viewer';
 export function ImageCollage({ images }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [bigImageModal, setBigImageModal] = useState(false);
+  const updatedImageObj = images.map(({ uri: url, ...rest }) => ({
+    url,
+    ...rest,
+  }));
 
   return (
     <>
@@ -21,7 +25,7 @@ export function ImageCollage({ images }) {
           onShowModal={ctx => console.log(ctx)}
           enableSwipeDown={true}
           onSwipeDown={() => setBigImageModal(false)}
-          imageUrls={images}
+          imageUrls={updatedImageObj}
           onCancel={() => setBigImageModal(false)}
           index={currentIndex}
         />
