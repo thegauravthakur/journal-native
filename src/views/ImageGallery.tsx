@@ -45,7 +45,8 @@ const ImageGallery = ({ route }) => {
   const [photos, setPhotos] = useState<PhotoIdentifier[]>([]);
   const [albums, setAlbums] = useState<any[]>([]);
   const [selectedAlbum, setSelectedAlbum] = useState('');
-  const [choosenImages, setChoosenImages] = useState<IChosenImage[]>([]);
+  const [chosenImages, setChosenImages] = useState<IChosenImage[]>([]);
+  const navigation = useNavigation();
 
   useEffect(() => {
     CameraRoll.getAlbums({ assetType: 'Photos' }).then(d => {
@@ -59,6 +60,7 @@ const ImageGallery = ({ route }) => {
       setAlbums(temp);
     });
   }, []);
+
   useEffect(() => {
     CameraRoll.getPhotos({
       assetType: 'Photos',
@@ -71,14 +73,14 @@ const ImageGallery = ({ route }) => {
       setPhotos(r.edges);
     });
   }, [selectedAlbum]);
-  const navigation = useNavigation();
+
   navigation.setOptions({
     title: '',
     headerRight: () => (
       <Ripple
         onPress={() => {
           const promiseToResolve: Promise<{ uri: string }>[] = [];
-          choosenImages.forEach(image => {
+          chosenImages.forEach(image => {
             const promise = reduceSingleImageSize(image.uri, image.type);
             promiseToResolve.push(promise);
           });
@@ -135,20 +137,19 @@ const ImageGallery = ({ route }) => {
             onLongPress={() => {
               setMode('multi');
               const temp = [
-                ...choosenImages,
+                ...chosenImages,
                 { uri: item.node.image.uri, type: item.node.type },
               ];
-              setChoosenImages(temp);
+              setChosenImages(temp);
             }}
             onPress={async () => {
               console.log(item.node);
-              const checkIfAlredySelected =
-                choosenImages.findIndex(
-                  img => img.uri === item.node.image.uri,
-                ) > -1;
+              const checkIfAlreadySelected =
+                chosenImages.findIndex(img => img.uri === item.node.image.uri) >
+                -1;
 
               if (mode === 'single') {
-                if (chooseLimit > choosenImages.length) {
+                if (chooseLimit > chosenImages.length) {
                   const base64 = await reduceSingleImageSize(
                     item.node.image.uri,
                     item.node.type,
@@ -160,25 +161,25 @@ const ImageGallery = ({ route }) => {
                   });
                   navigation.goBack();
                 }
-              } else if (checkIfAlredySelected) {
-                const removedItem = choosenImages.filter(
+              } else if (checkIfAlreadySelected) {
+                const removedItem = chosenImages.filter(
                   img => img.uri !== item.node.image.uri,
                 );
-                setChoosenImages(removedItem);
+                setChosenImages(removedItem);
                 if (removedItem.length === 0) setMode('single');
-              } else if (chooseLimit > choosenImages.length) {
+              } else if (chooseLimit > chosenImages.length) {
                 const temp = [
-                  ...choosenImages,
+                  ...chosenImages,
                   { uri: item.node.image.uri, type: item.node.type },
                 ];
-                setChoosenImages(temp);
+                setChosenImages(temp);
               }
             }}>
             <View>
               <Image
                 style={{
                   ...Style.image,
-                  ...(choosenImages.filter(
+                  ...(chosenImages.filter(
                     img => img.uri === item.node.image.uri,
                   ).length > 0 && {
                     opacity: 0.4,
@@ -186,7 +187,7 @@ const ImageGallery = ({ route }) => {
                 }}
                 source={{ uri: item.node.image.uri }}
               />
-              {choosenImages.findIndex(img => img.uri === item.node.image.uri) >
+              {chosenImages.findIndex(img => img.uri === item.node.image.uri) >
                 -1 && (
                 <MaterialIcon
                   style={{

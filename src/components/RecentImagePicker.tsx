@@ -3,7 +3,6 @@ import CameraRoll, {
 } from '@react-native-community/cameraroll';
 import {
   Image,
-  PermissionsAndroid,
   ScrollView,
   StyleSheet,
   TouchableHighlight,
@@ -11,25 +10,21 @@ import {
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { reduceSingleImageSize } from '../utils/imageManipulatioin';
-import { checkAndRequestPermission } from '../services/permissions';
 
 export function RecentImagePicker({ setImage }) {
   const [photos, setPhotos] = useState<PhotoIdentifier[]>([]);
 
   useEffect(() => {
-    checkAndRequestPermission().then(result => {
-      if (result)
-        CameraRoll.getPhotos({
-          first: 10,
-          assetType: 'Photos',
-        })
-          .then(r => {
-            setPhotos(r.edges);
-          })
-          .catch(err => {
-            console.log(err);
-          });
-    });
+    CameraRoll.getPhotos({
+      first: 10,
+      assetType: 'Photos',
+    })
+      .then(r => {
+        setPhotos(r.edges);
+      })
+      .catch(err => {
+        console.log(err);
+      });
   }, []);
 
   return (

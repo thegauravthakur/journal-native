@@ -65,44 +65,46 @@ function ModalTester({ isModalVisible, setModalVisible }) {
         )}
         <TouchableOpacity
           onPress={async () => {
-            const realm = await getRealm();
-            if (password.length < 4) {
-              setErrorMessage(
-                'Password length should be greater than 4 characters',
-              );
-              return;
-            } else setErrorMessage('');
+            try {
+              const realm = await getRealm();
+              if (password.length < 4) {
+                setErrorMessage(
+                  'Password length should be greater than 4 characters',
+                );
+                return;
+              } else setErrorMessage('');
 
-            setSpinner({ visible: true, textContent: '' });
-            RNFS.exists(RNFS.DocumentDirectoryPath + '/backup')
-              .then(exists => {
-                if (!exists) RNFS.mkdir(RNFS.DocumentDirectoryPath + '/backup');
+              setSpinner({ visible: true, textContent: '' });
+              const isExists = await RNFS.exists(
+                RNFS.DocumentDirectoryPath + '/backup',
+              );
+              if (!isExists)
+                await RNFS.mkdir(RNFS.DocumentDirectoryPath + '/backup');
+              await RNFS.copyFile(
+                realm.path,
+                RNFS.DocumentDirectoryPath + '/backup/myrealm2.realm',
+              );
+              console.log('copy file done!');
+              const path = await zipWithPassword(
+                RNFS.DocumentDirectoryPath + '/backup',
+                RNFS.DocumentDirectoryPath + '/backupSuper.zip',
+                password,
+              );
+              console.log('zip done successfully!');
+              setSpinner({ visible: false, textContent: '' });
+              Share.open({
+                title: 'backup models',
+                url: 'file://' + path,
               })
-              .then(() => {
-                RNFS.copyFile(
-                  realm.path,
-                  RNFS.DocumentDirectoryPath + '/backup/myrealm2.realm',
-                ).then(() => console.log('copy done'));
-              })
-              .then(() => {
-                zipWithPassword(
-                  RNFS.DocumentDirectoryPath + '/backup',
-                  RNFS.DocumentDirectoryPath + '/backupSuper.zip',
-                  password,
-                ).then(d => {
-                  setSpinner({ visible: false, textContent: '' });
-                  Share.open({
-                    title: 'backup models',
-                    url: 'file://' + d,
-                  })
-                    .then(() => {
-                      setModalVisible(false);
-                    })
-                    .catch(() => {
-                      setModalVisible(false);
-                    });
+                .then(() => {
+                  setModalVisible(false);
+                })
+                .catch(() => {
+                  setModalVisible(false);
                 });
-              });
+            } catch (e) {
+              console.log('error occurred while created zip ', e);
+            }
           }}
           style={{}}>
           <Text
@@ -119,32 +121,32 @@ function ModalTester({ isModalVisible, setModalVisible }) {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => {
-            if (password.length < 4) {
-              setErrorMessage(
-                'Password length should be greater than 4 characters',
-              );
-              return;
-            } else setErrorMessage('');
+          onPress={async () => {
+            try {
+              if (password.length < 4) {
+                setErrorMessage(
+                  'Password length should be greater than 4 characters',
+                );
+                return;
+              } else setErrorMessage('');
 
-            DocumentPicker.pickSingle().then(r => {
+              const { uri } = await DocumentPicker.pickSingle();
               setSpinner({ visible: true, textContent: '' });
-              RNFS.copyFile(
-                r.uri,
+              await RNFS.copyFile(
+                uri,
                 RNFS.DocumentDirectoryPath + '/superRestore.zip',
-              ).then(() => {
-                console.log('copy done!');
-                unzipWithPassword(
-                  RNFS.DocumentDirectoryPath + '/' + 'superRestore.zip',
-                  RNFS.DocumentDirectoryPath,
-                  password,
-                ).then(() => {
-                  console.log('unzip done');
-                  setSpinner({ visible: true, textContent: '' });
-                  RNRestart.Restart();
-                });
-              });
-            });
+              );
+              console.log('copy done!');
+              await unzipWithPassword(
+                RNFS.DocumentDirectoryPath + '/' + 'superRestore.zip',
+                RNFS.DocumentDirectoryPath,
+                password,
+              );
+              setSpinner({ visible: true, textContent: '' });
+              RNRestart.Restart();
+            } catch (e) {
+              console.log('Error occurred while restoring', e);
+            }
           }}
           style={{}}>
           <Text

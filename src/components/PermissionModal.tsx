@@ -2,7 +2,6 @@ import { Text, View } from 'react-native';
 import Modal from 'react-native-modal';
 import React from 'react';
 import Ripple from 'react-native-material-ripple';
-import { check, openSettings, PERMISSIONS } from 'react-native-permissions';
 import { checkAndRequestPermission } from '../services/permissions';
 
 export const PermissionModal = ({
@@ -23,34 +22,39 @@ export const PermissionModal = ({
             fontWeight: 'bold',
             fontSize: 18,
             paddingBottom: 10,
+            color: '#1E40AF',
           }}>
           Permission Required!
         </Text>
-        <Text>
-          Inorder to use images, you need to give read permission to the
-          application. This will give us enough rights to show your images
+        <Text style={{ color: '#4B5563', lineHeight: 20, fontSize: 15 }}>
+          To use local images, you need to grant permission to read the external
+          storage.
+        </Text>
+        <Text
+          style={{
+            color: '#4B5563',
+            lineHeight: 20,
+            fontSize: 15,
+            marginTop: 10,
+          }}>
+          We upload none of your data to any server. We store everything safely
+          on the device itself 😊.
         </Text>
         <Ripple
-          onPress={() => {
-            check(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE).then(
-              async result => {
-                if (result === 'denied') {
-                  const granted = await checkAndRequestPermission();
-                  if (granted) setShowPermissionModal(false);
-                } else if (result === 'blocked') await openSettings();
-                else if (result === 'granted') setShowPermissionModal(false);
-              },
-            );
+          onPress={async () => {
+            const result = await checkAndRequestPermission();
+            if (result) setShowPermissionModal(false);
           }}
           style={{
-            paddingVertical: 9,
+            paddingVertical: 8,
             paddingHorizontal: 10,
             borderWidth: 1,
             alignSelf: 'flex-start',
             borderRadius: 5,
             marginTop: 20,
+            borderColor: '#1E40AF',
           }}>
-          <Text>Give Permission</Text>
+          <Text style={{ color: '#047857' }}>Give Permission</Text>
         </Ripple>
       </View>
     </Modal>

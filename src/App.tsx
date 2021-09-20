@@ -9,16 +9,13 @@ import {
 } from '@react-navigation/drawer';
 import { NavigationContainer } from '@react-navigation/native';
 import ModalTester from './components/BackupRestoreModal';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { checkAndRequestPermission } from './services/permissions';
-
+import InfoView from './views/InfoView';
 function App() {
   const Drawer = createDrawerNavigator();
   const [isModalVisible, setModalVisible] = useState(false);
-  useEffect(() => {
-    checkAndRequestPermission().then();
-  }, []);
+
   return (
     <RecoilRoot>
       <ModalTester
@@ -39,6 +36,20 @@ function App() {
             }}
             name='Home'
             component={NavigationLayer}
+          />
+          <Drawer.Screen
+            options={{
+              drawerIcon: ({ color, size }) => (
+                <MaterialIcon
+                  color={color}
+                  name={'checkbox-marked-circle-outline'}
+                  size={size}
+                />
+              ),
+              title: 'Support & Info',
+            }}
+            name='InfoView'
+            component={InfoView}
           />
         </Drawer.Navigator>
       </NavigationContainer>

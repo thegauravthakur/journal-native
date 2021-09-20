@@ -12,6 +12,13 @@ export const checkAndRequestPermission = async () => {
     PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE,
     PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE,
   ]);
+  if (
+    status[PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE] === RESULTS.BLOCKED ||
+    status[PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE] === RESULTS.BLOCKED
+  ) {
+    await openSettings();
+    return false;
+  }
   const permissionsToRequest: Permission[] = [];
   if (status[PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE] !== RESULTS.GRANTED)
     permissionsToRequest.push(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE);
@@ -27,14 +34,17 @@ export const checkAndRequestPermission = async () => {
   );
 };
 
-export const checkIfPermissionAreGranted = async () => {
+export const checkIfPermissionAreGranted = async (
+  openSettingsIfBlocked: boolean = true,
+) => {
   const status = await checkMultiple([
     PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE,
     PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE,
   ]);
   if (
-    status[PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE] === RESULTS.BLOCKED ||
-    status[PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE] === RESULTS.BLOCKED
+    (status[PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE] === RESULTS.BLOCKED ||
+      status[PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE] === RESULTS.BLOCKED) &&
+    openSettingsIfBlocked
   ) {
     await openSettings();
     return false;

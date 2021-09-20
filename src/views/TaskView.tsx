@@ -42,7 +42,6 @@ export function TaskView({ route }) {
   const { title, description, setData, isNew, imagesArray, _id } = route.params;
   const [inputTitle, setInputTitle] = useState(title);
   const setSpinner = useSetRecoilState(spinnerState);
-  const [showPermissionModal, setShowPermissionModal] = useState(false);
   const [inputDescription, setInputDescription] = useState(description);
   const [images, setImages] = useState<{ uri: string; _id?: string }[]>(
     imagesArray,
@@ -148,10 +147,6 @@ export function TaskView({ route }) {
 
   return (
     <View style={Style.container}>
-      <PermissionModal
-        showPermissionModal={showPermissionModal}
-        setShowPermissionModal={setShowPermissionModal}
-      />
       <ScrollView>
         <TaskViewTextInput
           inputTitle={inputTitle}
@@ -178,16 +173,12 @@ export function TaskView({ route }) {
             <Ripple
               rippleCentered
               onPress={() => {
-                checkIfPermissionAreGranted().then(result => {
-                  if (result) {
-                    const limit = 4 - images.length;
-                    if (images.length < 4)
-                      navigation.navigate('ImageGallery', {
-                        setImages,
-                        chooseLimit: limit,
-                      });
-                  } else setShowPermissionModal(true);
-                });
+                const limit = 4 - images.length;
+                if (images.length < 4)
+                  navigation.navigate('ImageGallery', {
+                    setImages,
+                    chooseLimit: limit,
+                  });
               }}
               style={{ borderRadius: 100 }}>
               <Icon style={Style.pictureIcon} size={27} name={'photo'} />

@@ -10,10 +10,13 @@ import { activeDateState } from '../recoil/atom';
 import { IEvent } from './types/DayView.types';
 import { getEventDataForDate } from '../services/transaction';
 import { getEventsToMarkOnCalendar } from '../utils/Calendar';
+import { PermissionModal } from '../components/PermissionModal';
+import { checkIfPermissionAreGranted } from '../services/permissions';
 
 export function DayView() {
   const navigation = useNavigation();
   const [data, setData] = useState<IEvent[]>([]);
+  const [showPermissionModal, setShowPermissionModal] = useState(false);
   const [markedDates, setMarkedDates] = useState({});
   const [activeDate, setActiveDate] = useRecoilState(activeDateState);
 
@@ -21,6 +24,12 @@ export function DayView() {
     // @ts-ignore
     getEventDataForDate(activeDate).then(events => setData(events));
   }, [activeDate]);
+
+  useEffect(() => {
+    checkIfPermissionAreGranted(false).then(result => {
+      if (!result) setShowPermissionModal(true);
+    });
+  }, []);
 
   useEffect(() => {
     getEventsToMarkOnCalendar(activeDate).then(markedEvents =>
@@ -41,6 +50,10 @@ export function DayView() {
   });
   return (
     <View style={{ flex: 1 }}>
+      <PermissionModal
+        showPermissionModal={showPermissionModal}
+        setShowPermissionModal={setShowPermissionModal}
+      />
       <FlatList
         contentContainerStyle={{ flexGrow: 1 }}
         style={Style.list}

@@ -77,8 +77,6 @@ export function AddTaskInput({ setData }) {
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            // paddingHorizontal: 10,
-            // paddingBottom: 5,
           }}>
           <Ripple
             rippleCentered
@@ -133,5 +131,4 @@ const Style = StyleSheet.create({
   expandIcon: {
     padding: 8,
   },
-  pictureIcon: {},
 });
