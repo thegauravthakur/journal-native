@@ -164,7 +164,6 @@ const Style = StyleSheet.create({
   },
   ErrorMessageText: { paddingBottom: 10, color: '#EF4444' },
   Message: { color: '#6B7280' },
-
   SubHeading: { fontWeight: 'bold' },
 });
 
