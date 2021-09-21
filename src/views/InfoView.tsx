@@ -1,12 +1,12 @@
 import { Text, TouchableOpacity, View } from 'react-native';
 import React from 'react';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
-import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 const pkg = require('../../package.json');
+import InfoViewListTile from '../components/InfoViewListTile';
 
 const InfoView = () => {
   return (
-    <View>
+    <View style={{}}>
       <View
         style={{
           flexDirection: 'row',
@@ -14,81 +14,38 @@ const InfoView = () => {
           paddingHorizontal: 10,
           paddingVertical: 10,
         }}>
-        <EntypoIcon size={50} name={'book'} />
+        <EntypoIcon color={'#3B82F6'} size={50} name={'book'} />
         <View style={{ marginLeft: 10 }}>
-          <Text style={{ fontSize: 17, fontWeight: 'bold' }}>
+          <Text style={{ fontSize: 17, fontWeight: 'bold', color: '#4F46E5' }}>
             Everyday Journal
           </Text>
-          <Text style={{ fontSize: 13 }}>Version {pkg.version}</Text>
-        </View>
-      </View>
-
-      <TouchableOpacity>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            paddingHorizontal: 20,
-            paddingVertical: 10,
-          }}>
-          <MaterialIcon size={30} name={'comment-multiple'} />
-          <View style={{ marginLeft: 20 }}>
-            <Text style={{ fontSize: 17, fontWeight: 'bold' }}>Rate me!</Text>
-            <Text style={{ fontSize: 13 }}>
-              Help me improve the app by adding a quick review
-            </Text>
-          </View>
-        </View>
-      </TouchableOpacity>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingHorizontal: 20,
-          paddingVertical: 10,
-        }}>
-        <MaterialIcon size={30} name={'email'} />
-        <View style={{ marginHorizontal: 20 }}>
-          <Text style={{ fontSize: 17, fontWeight: 'bold' }}>
-            Send feedback!
-          </Text>
-          <Text style={{ fontSize: 13 }}>
-            Do you have any suggestion or feature that you want in this app.
+          <Text style={{ fontSize: 13, color: '#6B7280' }}>
+            Version {pkg.version}
           </Text>
         </View>
       </View>
-
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingHorizontal: 20,
-          paddingVertical: 10,
-        }}>
-        <MaterialIcon size={30} name={'bug'} />
-        <View style={{ marginHorizontal: 20 }}>
-          <Text style={{ fontSize: 17, fontWeight: 'bold' }}>Report a bug</Text>
-          <Text style={{ fontSize: 13 }}>
-            Are you facing any bug in the application?
-          </Text>
-        </View>
-      </View>
-
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          paddingHorizontal: 20,
-          paddingVertical: 10,
-        }}>
-        <MaterialIcon size={30} name={'twitter'} />
-        <View style={{ marginHorizontal: 20 }}>
-          <Text style={{ fontSize: 17, fontWeight: 'bold' }}>Follow me</Text>
-          <Text style={{ fontSize: 13 }}>
-            Twitter is the fastest way to contact me!
-          </Text>
-        </View>
-      </View>
+      <InfoViewListTile
+        icon={'comment-multiple'}
+        subText={'Help me improve the app by adding a quick review'}
+        title={'Rate me!'}
+      />
+      <InfoViewListTile
+        icon={'email'}
+        subText={
+          'Do you have any suggestion or feature that you want in this app.'
+        }
+        title={'Send feedback!'}
+      />
+      <InfoViewListTile
+        icon={'bug'}
+        subText={'Are you facing any bug in the application?'}
+        title={'Report a bug'}
+      />
+      <InfoViewListTile
+        icon={'twitter'}
+        subText={'Twitter is the fastest way to contact me!'}
+        title={'Follow me'}
+      />
     </View>
   );
 };
