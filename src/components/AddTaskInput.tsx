@@ -5,12 +5,14 @@ import Ripple from 'react-native-material-ripple';
 import {
   activeDateState,
   descriptionInputState,
+  themeState,
   titleInputState,
 } from '../recoil/atom';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import { isToday } from 'date-fns';
 import { StackNavigationProp } from '@react-navigation/stack';
+import colorScheme from '../constants/colorScheme';
 
 export function AddTaskInput({ setData }) {
   const navigation = useNavigation<StackNavigationProp<any>>(); //todo
@@ -21,9 +23,40 @@ export function AddTaskInput({ setData }) {
   const [descriptionHeight, setDescriptionHeight] = useState(42);
   const activeDate = useRecoilValue(activeDateState);
   const ref = useRef<TextInput>(null);
+  const theme = useRecoilValue(themeState);
   const enableEdit = isToday(activeDate);
   let check = false;
   let check2 = false;
+
+  const Style = StyleSheet.create({
+    container: {
+      borderWidth: 1,
+      marginHorizontal: 5,
+      borderRadius: 10,
+      borderColor: colorScheme[theme].subText,
+      marginTop: -7,
+      marginBottom: 20,
+    },
+    titleInput: {
+      fontWeight: 'bold',
+      color: colorScheme[theme].text,
+      padding: 0,
+      fontSize: 18,
+      paddingVertical: 10,
+      paddingHorizontal: 5,
+    },
+    descriptionInput: {
+      color: colorScheme[theme].text,
+      padding: 0,
+      fontSize: 16,
+      paddingVertical: 10,
+      paddingHorizontal: 5,
+    },
+    expandIcon: {
+      padding: 8,
+    },
+  });
+
   return (
     <View style={Style.container}>
       {show && (
@@ -44,7 +77,7 @@ export function AddTaskInput({ setData }) {
             }, 10);
           }}
           placeholder={'Title'}
-          placeholderTextColor={'black'}
+          placeholderTextColor={colorScheme[theme].text}
         />
       )}
       <TextInput
@@ -69,7 +102,7 @@ export function AddTaskInput({ setData }) {
           }, 10);
         }}
         placeholder={'Take a note'}
-        placeholderTextColor={'black'}
+        placeholderTextColor={colorScheme[theme].text}
       />
       {show && (
         <View
@@ -91,7 +124,7 @@ export function AddTaskInput({ setData }) {
             }}
             style={{ borderRadius: 100 }}>
             <Ionicons
-              color={'black'}
+              color={colorScheme[theme].text}
               onPress={() => {}}
               style={Style.expandIcon}
               size={18}
@@ -104,31 +137,3 @@ export function AddTaskInput({ setData }) {
     </View>
   );
 }
-
-const Style = StyleSheet.create({
-  container: {
-    borderWidth: 1,
-    marginHorizontal: 5,
-    borderRadius: 10,
-    marginTop: -7,
-    marginBottom: 20,
-  },
-  titleInput: {
-    fontWeight: 'bold',
-    color: 'black',
-    padding: 0,
-    fontSize: 18,
-    paddingVertical: 10,
-    paddingHorizontal: 5,
-  },
-  descriptionInput: {
-    color: 'black',
-    padding: 0,
-    fontSize: 16,
-    paddingVertical: 10,
-    paddingHorizontal: 5,
-  },
-  expandIcon: {
-    padding: 8,
-  },
-});

@@ -6,7 +6,8 @@ import * as React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import Spinner from 'react-native-loading-spinner-overlay';
 import { useRecoilValue } from 'recoil';
-import { spinnerState } from '../recoil/atom';
+import { spinnerState, themeState } from '../recoil/atom';
+import colorScheme from '../constants/colorScheme';
 
 type RootStackParamList = {
   DayView: undefined;
@@ -17,6 +18,7 @@ type RootStackParamList = {
 export default function NavigationLayer({ navigation }) {
   const Stack = createStackNavigator<RootStackParamList>();
   const spinnerValue = useRecoilValue(spinnerState);
+  const theme = useRecoilValue(themeState);
   return (
     <>
       <Spinner
@@ -34,6 +36,7 @@ export default function NavigationLayer({ navigation }) {
               <Icon
                 onPress={() => navigation.openDrawer()}
                 name={'menu'}
+                color={colorScheme[theme].text}
                 size={25}
                 style={{ marginLeft: 10 }}
               />

@@ -6,12 +6,17 @@ import { useNavigation } from '@react-navigation/native';
 import Ripple from 'react-native-material-ripple';
 import { Calendar } from 'react-native-calendars';
 import { useRecoilState } from 'recoil';
-import { activeDateState } from '../recoil/atom';
+import { activeDateState, themeState } from '../recoil/atom';
 import { IEvent } from './types/DayView.types';
 import { getEventDataForDate } from '../services/transaction';
 import { getEventsToMarkOnCalendar } from '../utils/Calendar';
 import { PermissionModal } from '../components/PermissionModal';
 import { checkIfPermissionAreGranted } from '../services/permissions';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import colorScheme from '../constants/colorScheme';
+import SplashScreen from 'react-native-splash-screen';
+import MMKVStorage from 'react-native-mmkv-storage';
+import { setRootViewBackgroundColor } from '@pnthach95/react-native-root-view-background';
 
 export function DayView() {
   const navigation = useNavigation();
@@ -19,10 +24,18 @@ export function DayView() {
   const [showPermissionModal, setShowPermissionModal] = useState(false);
   const [markedDates, setMarkedDates] = useState({});
   const [activeDate, setActiveDate] = useRecoilState(activeDateState);
+  const [theme, setTheme] = useRecoilState(themeState);
+  const MMKV = new MMKVStorage.Loader().initialize();
 
   useEffect(() => {
-    // @ts-ignore
-    getEventDataForDate(activeDate).then(events => setData(events));
+    getEventDataForDate(activeDate)
+      .then(events => {
+        // @ts-ignore
+        setData(events);
+      })
+      .finally(() => {
+        SplashScreen.hide();
+      });
   }, [activeDate]);
 
   useEffect(() => {
@@ -39,17 +52,22 @@ export function DayView() {
 
   navigation.setOptions({
     headerRight: () => (
-      <Ripple
-        onPress={() => {
-          setActiveDate(new Date());
+      <Icon
+        size={25}
+        color={colorScheme[theme].text}
+        name={'white-balance-sunny'}
+        style={[{ marginRight: 10 }]}
+        onPress={async () => {
+          const updatedTheme = theme === 'dark' ? 'light' : 'dark';
+          setTheme(updatedTheme);
+          await MMKV.setStringAsync('theme', updatedTheme);
+          setRootViewBackgroundColor(colorScheme[updatedTheme].card);
         }}
-        style={Style.ripple}>
-        <Text style={Style.ripple__button}>Today</Text>
-      </Ripple>
+      />
     ),
   });
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: colorScheme[theme].background }}>
       <PermissionModal
         showPermissionModal={showPermissionModal}
         setShowPermissionModal={setShowPermissionModal}
@@ -72,12 +90,13 @@ export function DayView() {
                     fontSize: 17,
                     marginBottom: 20,
                     marginTop: -20,
+                    color: colorScheme[theme].text,
                   }}>
                   No events found
                 </Text>
               )}
               <Calendar
-                enableSwipeMonths={false}
+                theme={colorScheme[theme].calendarTheme}
                 markedDates={markedDates}
                 current={activeDate}
                 onDayPress={({ timestamp }) =>
@@ -117,8 +136,9 @@ const Style = StyleSheet.create({
     paddingHorizontal: 10,
     borderWidth: 1,
     borderRadius: 5,
+    borderColor: 'white',
   },
   ripple__button: {
-    color: 'black',
+    color: 'white',
   },
 });

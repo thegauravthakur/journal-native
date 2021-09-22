@@ -1,5 +1,8 @@
 import { StyleSheet, TextInput } from 'react-native';
 import React from 'react';
+import { useRecoilValue } from 'recoil';
+import { themeState } from '../recoil/atom';
+import colorScheme from '../constants/colorScheme';
 
 const TaskViewTextInput = ({
   inputTitle,
@@ -11,6 +14,26 @@ const TaskViewTextInput = ({
   setDescriptionHeight,
   setTitleHeight,
 }) => {
+  const theme = useRecoilValue(themeState);
+  const Style = StyleSheet.create({
+    titleInput: {
+      fontWeight: 'bold',
+      color: colorScheme[theme].text,
+      padding: 0,
+      fontSize: 19,
+      paddingVertical: 10,
+      paddingHorizontal: 5,
+      fontFamily: 'segoeui',
+    },
+    descriptionInput: {
+      color: colorScheme[theme].subText,
+      padding: 0,
+      fontSize: 16,
+      paddingHorizontal: 5,
+      lineHeight: 25,
+      fontFamily: 'segoeui',
+    },
+  });
   return (
     <>
       <TextInput
@@ -22,7 +45,7 @@ const TaskViewTextInput = ({
           setTitleHeight(e.nativeEvent.contentSize.height)
         }
         placeholder={'Title'}
-        placeholderTextColor={'black'}
+        placeholderTextColor={colorScheme[theme].subText}
       />
       <TextInput
         value={inputDescription}
@@ -41,30 +64,10 @@ const TaskViewTextInput = ({
           setDescriptionHeight(e.nativeEvent.contentSize.height);
         }}
         placeholder={'Take a note'}
-        placeholderTextColor={'black'}
+        placeholderTextColor={colorScheme[theme].subText}
       />
     </>
   );
 };
-
-const Style = StyleSheet.create({
-  titleInput: {
-    fontWeight: 'bold',
-    color: 'black',
-    padding: 0,
-    fontSize: 19,
-    paddingVertical: 10,
-    paddingHorizontal: 5,
-    fontFamily: 'segoeui',
-  },
-  descriptionInput: {
-    color: 'black',
-    padding: 0,
-    fontSize: 16,
-    paddingHorizontal: 5,
-    lineHeight: 25,
-    fontFamily: 'segoeui',
-  },
-});
 
 export default TaskViewTextInput;

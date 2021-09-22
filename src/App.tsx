@@ -1,74 +1,12 @@
 import * as React from 'react';
 import { RecoilRoot } from 'recoil';
-import NavigationLayer from './components/NavigationLayer';
-import {
-  createDrawerNavigator,
-  DrawerContentScrollView,
-  DrawerItem,
-  DrawerItemList,
-} from '@react-navigation/drawer';
-import { NavigationContainer } from '@react-navigation/native';
-import ModalTester from './components/BackupRestoreModal';
-import { useState } from 'react';
-import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import InfoView from './views/InfoView';
-function App() {
-  const Drawer = createDrawerNavigator();
-  const [isModalVisible, setModalVisible] = useState(false);
+import Initiator from './components/Initiator';
 
+function App() {
   return (
     <RecoilRoot>
-      <ModalTester
-        isModalVisible={isModalVisible}
-        setModalVisible={setModalVisible}
-      />
-      <NavigationContainer>
-        <Drawer.Navigator
-          initialRouteName={'EventView'}
-          defaultScreenOptions={{ headerShown: false }}
-          drawerContent={props => CustomDrawerContent(props, setModalVisible)}>
-          <Drawer.Screen
-            options={{
-              headerShown: false,
-              drawerIcon: ({ color, size }) => (
-                <MaterialIcon color={color} name={'home'} size={size} />
-              ),
-            }}
-            name='Home'
-            component={NavigationLayer}
-          />
-          <Drawer.Screen
-            options={{
-              drawerIcon: ({ color, size }) => (
-                <MaterialIcon
-                  color={color}
-                  name={'checkbox-marked-circle-outline'}
-                  size={size}
-                />
-              ),
-              title: 'Support & Info',
-            }}
-            name='InfoView'
-            component={InfoView}
-          />
-        </Drawer.Navigator>
-      </NavigationContainer>
+      <Initiator />
     </RecoilRoot>
-  );
-}
-
-function CustomDrawerContent(props, setModalVisible) {
-  return (
-    <DrawerContentScrollView {...props}>
-      <DrawerItemList {...props} />
-      <DrawerItem
-        icon={({ color, size }) => (
-          <MaterialIcon size={size} color={color} name={'backup-restore'} />
-        )}
-        label='Backup | Restore'
-        onPress={() => setModalVisible(true)}
-      />
-    </DrawerContentScrollView>
   );
 }
 

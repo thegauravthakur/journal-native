@@ -10,6 +10,7 @@ import {
   activeDateState,
   descriptionInputState,
   spinnerState,
+  themeState,
   titleInputState,
 } from '../recoil/atom';
 import {
@@ -35,6 +36,7 @@ import getRealm from '../services/realm';
 import { PermissionModal } from '../components/PermissionModal';
 import { check, PERMISSIONS } from 'react-native-permissions';
 import { checkIfPermissionAreGranted } from '../services/permissions';
+import colorScheme from '../constants/colorScheme';
 
 export function TaskView({ route }) {
   const [titleHeight, setTitleHeight] = useState();
@@ -43,6 +45,7 @@ export function TaskView({ route }) {
   const [inputTitle, setInputTitle] = useState(title);
   const setSpinner = useSetRecoilState(spinnerState);
   const [inputDescription, setInputDescription] = useState(description);
+  const theme = useRecoilValue(themeState);
   const [images, setImages] = useState<{ uri: string; _id?: string }[]>(
     imagesArray,
   );
@@ -95,6 +98,67 @@ export function TaskView({ route }) {
     };
   }, [images]);
 
+  const Style = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: 'space-between',
+    },
+    titleInput: {
+      fontWeight: 'bold',
+      color: 'black',
+      padding: 0,
+      fontSize: 19,
+      paddingVertical: 10,
+      paddingHorizontal: 5,
+      fontFamily: 'segoeui',
+    },
+    descriptionInput: {
+      color: 'black',
+      padding: 0,
+      fontSize: 16,
+      paddingHorizontal: 5,
+      lineHeight: 25,
+      fontFamily: 'segoeui',
+    },
+    icon: {
+      borderRadius: 100,
+      padding: 9,
+    },
+    ripple: {
+      marginRight: 10,
+      paddingVertical: 5,
+      paddingHorizontal: 10,
+      borderWidth: 1,
+      borderRadius: 5,
+      borderColor: 'white',
+    },
+    ripple__button: {
+      color: 'white',
+    },
+    footerWrapper: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 10,
+      marginVertical: 5,
+    },
+    footerFirstHalf: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flex: 1,
+    },
+    deleteIcon: {
+      padding: 10,
+    },
+    gifIcon: {
+      borderWidth: 1,
+      marginHorizontal: 10,
+      borderColor: colorScheme[theme].text,
+    },
+    pictureIcon: {
+      padding: 10,
+    },
+  });
+
   navigation.setOptions({
     headerRight: () => (
       <Ripple
@@ -135,13 +199,10 @@ export function TaskView({ route }) {
   });
 
   const onDeleteHandler = async () => {
-    const realm = await getRealm();
-    console.log('total images before delete: ' + realm.objects('Image').length);
     if (!isNew) {
       await deleteEvent(_id);
       setData(await getEventDataForDate(activeDate));
     }
-    console.log('total images after delete: ' + realm.objects('Image').length);
     navigation.goBack();
   };
 
@@ -168,7 +229,12 @@ export function TaskView({ route }) {
               rippleCentered
               onPress={() => GiphyDialog.show()}
               style={{ borderRadius: 100 }}>
-              <Icon style={Style.gifIcon} size={18} name={'gif'} />
+              <Icon
+                color={colorScheme[theme].text}
+                style={Style.gifIcon}
+                size={18}
+                name={'gif'}
+              />
             </Ripple>
             <Ripple
               rippleCentered
@@ -181,16 +247,33 @@ export function TaskView({ route }) {
                   });
               }}
               style={{ borderRadius: 100 }}>
-              <Icon style={Style.pictureIcon} size={27} name={'photo'} />
+              <Icon
+                style={Style.pictureIcon}
+                color={colorScheme[theme].text}
+                size={27}
+                name={'photo'}
+              />
             </Ripple>
           </View>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <View style={{ borderRightWidth: 1, height: 30, marginRight: 5 }} />
+            <View
+              style={{
+                borderRightWidth: 1,
+                height: 30,
+                marginRight: 5,
+                borderColor: colorScheme[theme].subText,
+              }}
+            />
             <Ripple
               rippleCentered
               onPress={onDeleteHandler}
               style={{ borderRadius: 100 }}>
-              <Icon style={Style.deleteIcon} size={25} name={'delete'} />
+              <Icon
+                style={Style.deleteIcon}
+                color={colorScheme[theme].text}
+                size={25}
+                name={'delete'}
+              />
             </Ripple>
           </View>
         </View>
@@ -198,62 +281,3 @@ export function TaskView({ route }) {
     </View>
   );
 }
-
-const Style = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'space-between',
-  },
-  titleInput: {
-    fontWeight: 'bold',
-    color: 'black',
-    padding: 0,
-    fontSize: 19,
-    paddingVertical: 10,
-    paddingHorizontal: 5,
-    fontFamily: 'segoeui',
-  },
-  descriptionInput: {
-    color: 'black',
-    padding: 0,
-    fontSize: 16,
-    paddingHorizontal: 5,
-    lineHeight: 25,
-    fontFamily: 'segoeui',
-  },
-  icon: {
-    borderRadius: 100,
-    padding: 9,
-  },
-  ripple: {
-    marginRight: 10,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderRadius: 5,
-  },
-  ripple__button: {
-    color: 'black',
-  },
-  footerWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    marginVertical: 5,
-  },
-  footerFirstHalf: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  deleteIcon: {
-    padding: 10,
-  },
-  gifIcon: {
-    borderWidth: 1,
-    marginHorizontal: 10,
-  },
-  pictureIcon: {
-    padding: 10,
-  },
-});

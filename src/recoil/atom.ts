@@ -17,9 +17,15 @@ const spinnerState = atom({
   default: { visible: false, textContent: '' },
 });
 
+const themeState = atom({
+  key: 'themeState',
+  default: 'dark',
+});
+
 export {
   titleInputState,
   descriptionInputState,
   activeDateState,
   spinnerState,
+  themeState,
 };

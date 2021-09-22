@@ -9,16 +9,18 @@ import {
 import Modal from 'react-native-modal';
 import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
-import { useSetRecoilState } from 'recoil';
-import { spinnerState } from '../recoil/atom';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { spinnerState, themeState } from '../recoil/atom';
 import { zipWithPassword, unzipWithPassword } from 'react-native-zip-archive';
 import Share from 'react-native-share';
 import getRealm from '../services/realm';
 import RNRestart from 'react-native-restart';
+import colorScheme from '../constants/colorScheme';
 
 function ModalTester({ isModalVisible, setModalVisible }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [password, setPassword] = useState('');
+  const theme = useRecoilValue(themeState);
   const setSpinner = useSetRecoilState(spinnerState);
   const onBackupPress = async () => {
     try {
@@ -82,14 +84,61 @@ function ModalTester({ isModalVisible, setModalVisible }) {
       console.log('Error occurred while restoring', e);
     }
   };
+  const Style = StyleSheet.create({
+    RestoreText: {
+      textAlign: 'center',
+      backgroundColor: '#2563EB',
+      color: '#FFFFFF',
+      paddingVertical: 8,
+      marginBottom: 10,
+      borderRadius: 10,
+    },
+    BackupText: {
+      textAlign: 'center',
+      backgroundColor: '#10B981',
+      color: '#FFFFFF',
+      paddingVertical: 8,
+      marginBottom: 10,
+      borderRadius: 10,
+    },
+    ErrorMessage: {
+      borderWidth: 1,
+      borderColor: colorScheme[theme].subText,
+      padding: 0,
+      paddingVertical: 2,
+      paddingHorizontal: 4,
+      borderRadius: 5,
+    },
+    Title: {
+      fontSize: 17,
+      paddingBottom: 5,
+      fontWeight: 'bold',
+      color: colorScheme[theme].text,
+    },
+    SubText: {
+      fontSize: 14,
+      paddingBottom: 20,
+      color: colorScheme[theme].subText,
+    },
+    Wrapper: {
+      backgroundColor: colorScheme[theme].card,
+      paddingVertical: 20,
+      paddingHorizontal: 10,
+      borderRadius: 10,
+    },
+    ErrorMessageText: {
+      paddingBottom: 10,
+      color: colorScheme[theme].errorColor,
+    },
+    Message: { color: '#6B7280' },
+    SubHeading: { fontWeight: 'bold' },
+  });
   return (
     <Modal
       onLayout={() => {
         setErrorMessage('');
         setPassword('');
       }}
-      animationIn={'fadeIn'}
-      animationOut={'fadeOut'}
       onBackdropPress={() => setModalVisible(false)}
       onBackButtonPress={() => setModalVisible(false)}
       isVisible={isModalVisible}>
@@ -100,6 +149,7 @@ function ModalTester({ isModalVisible, setModalVisible }) {
           onChangeText={text => setPassword(text)}
           value={password}
           placeholder={'Enter password'}
+          placeholderTextColor={colorScheme[theme].subText}
           style={{
             ...Style.ErrorMessage,
             ...{ marginBottom: errorMessage === '' ? 10 : 5 },
@@ -124,47 +174,5 @@ function ModalTester({ isModalVisible, setModalVisible }) {
     </Modal>
   );
 }
-
-const Style = StyleSheet.create({
-  RestoreText: {
-    textAlign: 'center',
-    backgroundColor: '#2563EB',
-    color: '#FFFFFF',
-    paddingVertical: 8,
-    marginBottom: 10,
-    borderRadius: 10,
-  },
-  BackupText: {
-    textAlign: 'center',
-    backgroundColor: '#10B981',
-    color: '#FFFFFF',
-    paddingVertical: 8,
-    marginBottom: 10,
-    borderRadius: 10,
-  },
-  ErrorMessage: {
-    borderWidth: 1,
-    padding: 0,
-    paddingVertical: 2,
-    paddingHorizontal: 4,
-    borderRadius: 5,
-  },
-  Title: {
-    fontSize: 17,
-    paddingBottom: 5,
-    fontWeight: 'bold',
-    color: '#374151',
-  },
-  SubText: { fontSize: 14, paddingBottom: 20, color: '#4B5563' },
-  Wrapper: {
-    backgroundColor: 'white',
-    paddingVertical: 20,
-    paddingHorizontal: 10,
-    borderRadius: 10,
-  },
-  ErrorMessageText: { paddingBottom: 10, color: '#EF4444' },
-  Message: { color: '#6B7280' },
-  SubHeading: { fontWeight: 'bold' },
-});
 
 export default ModalTester;

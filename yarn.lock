@@ -1190,6 +1190,13 @@
     "@types/yargs" "^16.0.0"
     chalk "^4.0.0"
 
+"@pnthach95/react-native-root-view-background@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@pnthach95/react-native-root-view-background/-/react-native-root-view-background-1.0.4.tgz#1607ef2c4ebdf1b992f29d7eff22bff00e6c468b"
+  integrity sha512-lcfwFY6D2LZaGIrTXHCGwtWrZM6xROJe+HiebmbMwsgZo4kZ1z7OjWvJYocHmO22GZIdwdRcq9idtpPx5Q9znA==
+  dependencies:
+    tinycolor2 "^1.4.2"
+
 "@react-native-community/cameraroll@^4.0.4":
   version "4.0.4"
   resolved "https://registry.yarnpkg.com/@react-native-community/cameraroll/-/cameraroll-4.0.4.tgz#3e2567ce54e3985e8e0a51832dfa0e1c5317f75b"
@@ -1749,6 +1756,11 @@ acorn@^8.1.0:
   version "8.1.0"
   resolved "https://registry.yarnpkg.com/acorn/-/acorn-8.1.0.tgz#52311fd7037ae119cbb134309e901aa46295b3fe"
   integrity sha512-LWCF/Wn0nfHOmJ9rzQApGnxnvgfROzGilS8936rqN/lfcYkY9MYZzdMqN+2NJ4SlTc+m5HiSa+kNfDtI64dwUA==
+
+add@^2.0.6:
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/add/-/add-2.0.6.tgz#248f0a9f6e5a528ef2295dbeec30532130ae2235"
+  integrity sha1-JI8Kn25aUo7yKV2+7DBTITCuIjU=
 
 agent-base@^4.3.0:
   version "4.3.0"
@@ -6258,6 +6270,13 @@ react-native-animatable@1.3.3, react-native-animatable@^1.3.3:
   dependencies:
     prop-types "^15.7.2"
 
+react-native-auto-height-image@^3.2.4:
+  version "3.2.4"
+  resolved "https://registry.yarnpkg.com/react-native-auto-height-image/-/react-native-auto-height-image-3.2.4.tgz#c7a95d4d9701055c680c8dc02076def1107f9522"
+  integrity sha512-PTVzLuYY4Q5IDAk0QmnSNK12VnUPlt+ZiEJUlo5JUiHverR5Lg386iHK7D2bVkTNo7SCahIPlWzdSuX5Col3XQ==
+  dependencies:
+    prop-types "^15.7.2"
+
 react-native-calendars@^1.1266.0:
   version "1.1266.0"
   resolved "https://registry.yarnpkg.com/react-native-calendars/-/react-native-calendars-1.1266.0.tgz#f6426baf9774fb41ce296ace1c446b51148fc02b"
@@ -6342,6 +6361,11 @@ react-native-material-ripple@^0.9.1:
   dependencies:
     prop-types "^15.5.10"
 
+react-native-mmkv-storage@^0.6.3:
+  version "0.6.3"
+  resolved "https://registry.yarnpkg.com/react-native-mmkv-storage/-/react-native-mmkv-storage-0.6.3.tgz#86ad5e8c33b55209027b516275988dee8b0b5f2f"
+  integrity sha512-v8RfSg8HQTAq/kCXdRY0OPFmH6tCN/SSs3eR4PHTZ4DgZNmGgdaRPHg5ITLxTEyawrbvQUNUoiEyfS/SZEhxxA==
+
 react-native-modal@^13.0.0:
   version "13.0.0"
   resolved "https://registry.yarnpkg.com/react-native-modal/-/react-native-modal-13.0.0.tgz#b7117400cae8548e713eed760077dee44f78628e"
@@ -6404,6 +6428,11 @@ react-native-share@^7.1.0:
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/react-native-share/-/react-native-share-7.1.0.tgz#432be2b05be0d8246e78960b8009f35dfce8ba02"
   integrity sha512-LSnAz2OeuLrR2MS+PLUR3JN67eCkvu9Eh89j6FD2tah0BwJ5U/Vl31CcwJPV17+X6bLftzUxECPHZ9TtEr7Guw==
+
+react-native-splash-screen@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-splash-screen/-/react-native-splash-screen-3.2.0.tgz#d47ec8557b1ba988ee3ea98d01463081b60fff45"
+  integrity sha512-Ls9qiNZzW/OLFoI25wfjjAcrf2DZ975hn2vr6U9gyuxi2nooVbzQeFoQS5vQcbCt9QX5NY8ASEEAtlLdIa6KVg==
 
 react-native-super-grid@^4.1.1:
   version "4.1.1"
@@ -7540,6 +7569,11 @@ through2@^2.0.1:
     readable-stream "~2.3.6"
     xtend "~4.0.1"
 
+tinycolor2@^1.4.2:
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/tinycolor2/-/tinycolor2-1.4.2.tgz#3f6a4d1071ad07676d7fa472e1fac40a719d8803"
+  integrity sha512-vJhccZPs965sV/L2sU4oRQVAos0pQXwsvTLkWYdqJ+a8Q5kPFzJTuOFwy7UniPli44NKQGAglksjvOcpo95aZA==
+
 tmpl@1.0.x:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/tmpl/-/tmpl-1.0.4.tgz#23640dd7b42d00433911140820e5cf440e521dd1"
@@ -8149,3 +8183,8 @@ yargs@^16.1.1:
     string-width "^4.2.0"
     y18n "^5.0.5"
     yargs-parser "^20.2.2"
+
+yarn@^1.22.11:
+  version "1.22.11"
+  resolved "https://registry.yarnpkg.com/yarn/-/yarn-1.22.11.tgz#d0104043e7349046e0e2aec977c24be106925ed6"
+  integrity sha512-AWje4bzqO9RUn3sdnM5N8n4ZJ0BqCc/kqFJvpOI5/EVkINXui0yuvU7NDCEF//+WaxHuNay2uOHxA4+tq1P3cg==

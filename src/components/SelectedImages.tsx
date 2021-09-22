@@ -8,8 +8,34 @@ import {
 import Image from 'react-native-scalable-image';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import React from 'react';
+import colorScheme from '../constants/colorScheme';
+import { useRecoilValue } from 'recoil';
+import { themeState } from '../recoil/atom';
 
 export function SelectedImages({ images, setImages }) {
+  const theme = useRecoilValue(themeState);
+
+  const Style = StyleSheet.create({
+    image: {
+      marginVertical: 20,
+      borderRadius: 15,
+      overlayColor: colorScheme[theme].overlayColor,
+    },
+    imgContainer: {
+      flex: 1,
+      alignItems: 'center',
+    },
+    closeIcon: {
+      position: 'absolute',
+      top: 40,
+      right: 40,
+      backgroundColor: '#172234',
+      color: 'white',
+      borderRadius: 25,
+      padding: 2,
+    },
+  });
+
   return (
     <View>
       {images.length === 1 && (
@@ -39,7 +65,7 @@ export function SelectedImages({ images, setImages }) {
               style={{
                 borderRadius: 10,
                 marginLeft: 5,
-                overlayColor: '#F2F2F2',
+                overlayColor: colorScheme[theme].overlayColor,
               }}
               height={190}
               source={{ uri: images[0]._id ? images[0].uri : images[0].uri }}
@@ -68,7 +94,7 @@ export function SelectedImages({ images, setImages }) {
               style={{
                 borderRadius: 10,
                 marginLeft: 5,
-                overlayColor: '#F2F2F2',
+                overlayColor: colorScheme[theme].overlayColor,
               }}
               height={190}
               source={{ uri: images[1]._id ? images[1].uri : images[1].uri }}
@@ -98,7 +124,7 @@ export function SelectedImages({ images, setImages }) {
                 style={{
                   borderRadius: 10,
                   marginLeft: 5,
-                  overlayColor: '#F2F2F2',
+                  overlayColor: colorScheme[theme].overlayColor,
                 }}
                 height={190}
                 source={{ uri: images[2]._id ? images[2].uri : images[2].uri }}
@@ -129,7 +155,7 @@ export function SelectedImages({ images, setImages }) {
                 style={{
                   borderRadius: 10,
                   marginLeft: 5,
-                  overlayColor: '#F2F2F2',
+                  overlayColor: colorScheme[theme].overlayColor,
                 }}
                 height={190}
                 source={{ uri: images[3]._id ? images[3].uri : images[3].uri }}
@@ -159,24 +185,3 @@ export function SelectedImages({ images, setImages }) {
     </View>
   );
 }
-
-const Style = StyleSheet.create({
-  image: {
-    marginVertical: 20,
-    borderRadius: 15,
-    overlayColor: '#F2F2F2',
-  },
-  imgContainer: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  closeIcon: {
-    position: 'absolute',
-    top: 40,
-    right: 40,
-    backgroundColor: '#172234',
-    color: 'white',
-    borderRadius: 25,
-    padding: 2,
-  },
-});

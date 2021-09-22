@@ -3,16 +3,20 @@ import Modal from 'react-native-modal';
 import React from 'react';
 import Ripple from 'react-native-material-ripple';
 import { checkAndRequestPermission } from '../services/permissions';
+import { useRecoilValue } from 'recoil';
+import { themeState } from '../recoil/atom';
+import colorScheme from '../constants/colorScheme';
 
 export const PermissionModal = ({
   showPermissionModal,
   setShowPermissionModal,
 }) => {
+  const theme = useRecoilValue(themeState);
   return (
     <Modal isVisible={showPermissionModal}>
       <View
         style={{
-          backgroundColor: 'white',
+          backgroundColor: colorScheme[theme].card,
           paddingVertical: 25,
           paddingHorizontal: 15,
           borderRadius: 10,
@@ -26,13 +30,18 @@ export const PermissionModal = ({
           }}>
           Permission Required!
         </Text>
-        <Text style={{ color: '#4B5563', lineHeight: 20, fontSize: 15 }}>
+        <Text
+          style={{
+            color: colorScheme[theme].subText,
+            lineHeight: 20,
+            fontSize: 15,
+          }}>
           To use local images, you need to grant permission to read the external
           storage.
         </Text>
         <Text
           style={{
-            color: '#4B5563',
+            color: colorScheme[theme].subText,
             lineHeight: 20,
             fontSize: 15,
             marginTop: 10,
@@ -54,7 +63,12 @@ export const PermissionModal = ({
             marginTop: 20,
             borderColor: '#1E40AF',
           }}>
-          <Text style={{ color: '#047857' }}>Give Permission</Text>
+          <Text
+            style={{
+              color: colorScheme[theme].text,
+            }}>
+            Give Permission
+          </Text>
         </Ripple>
       </View>
     </Modal>
