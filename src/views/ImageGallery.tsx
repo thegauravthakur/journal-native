@@ -12,7 +12,6 @@ import CameraRoll, {
 } from '@react-native-community/cameraroll';
 import { FlatGrid } from 'react-native-super-grid';
 import { useNavigation } from '@react-navigation/native';
-import RNPickerSelect from 'react-native-picker-select';
 import Ripple from 'react-native-material-ripple';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -21,6 +20,7 @@ import { IChosenImage } from './types/ImageGallery.types';
 import colorScheme from '../constants/colorScheme';
 import { useRecoilValue } from 'recoil';
 import { themeState } from '../recoil/atom';
+import Modal from 'react-native-modal';
 
 const ImageGallery = ({ route }) => {
   const { setImages, chooseLimit } = route.params;
@@ -29,12 +29,13 @@ const ImageGallery = ({ route }) => {
   const [albums, setAlbums] = useState<any[]>([]);
   const [selectedAlbum, setSelectedAlbum] = useState('');
   const [chosenImages, setChosenImages] = useState<IChosenImage[]>([]);
+  const [showModal, setShowModal] = useState(false);
   const theme = useRecoilValue(themeState);
   const navigation = useNavigation();
 
   useEffect(() => {
     CameraRoll.getAlbums({ assetType: 'Photos' }).then(d => {
-      const temp: any[] = [];
+      const temp = [];
       d.forEach(data => {
         temp.push({
           label: data.title,
@@ -74,33 +75,7 @@ const ImageGallery = ({ route }) => {
       borderColor: colorScheme[theme].subText,
     },
   });
-  const pickerStyle = {
-    inputIOS: {
-      color: 'white',
-      paddingTop: 13,
-      paddingHorizontal: 10,
-      paddingBottom: 12,
-    },
-    inputAndroid: {
-      color: 'white',
-    },
-    placeholderColor: 'white',
-    underline: { borderTopWidth: 0 },
-    icon: {
-      position: 'absolute',
-      backgroundColor: 'transparent',
-      borderTopWidth: 5,
-      borderTopColor: '#00000099',
-      borderRightWidth: 5,
-      borderRightColor: 'transparent',
-      borderLeftWidth: 5,
-      borderLeftColor: 'transparent',
-      width: 0,
-      height: 0,
-      top: 20,
-      right: 15,
-    },
-  };
+
   navigation.setOptions({
     title: '',
     headerRight: () => (
@@ -134,29 +109,51 @@ const ImageGallery = ({ route }) => {
           name={'keyboard-backspace'}
           color={colorScheme[theme].subText}
         />
-        <RNPickerSelect
-          placeholder={{ label: 'All Images', value: null }}
-          style={pickerStyle}
-          useNativeAndroidPickerStyle={false}
-          modalProps={{ style: { backgroundColor: 'black' } }}
-          onValueChange={value => setSelectedAlbum(value ? value.title : '')}
-          items={albums}>
-          <Ripple style={Style.ripple}>
-            <Text style={{ color: colorScheme[theme].text }}>
-              {selectedAlbum === '' ? 'All Images' : selectedAlbum}
-            </Text>
-            <Icon
-              style={{ marginLeft: 3, color: colorScheme[theme].subText }}
-              size={20}
-              name={'keyboard-arrow-down'}
-            />
-          </Ripple>
-        </RNPickerSelect>
+
+        <Ripple style={Style.ripple} onPress={() => setShowModal(true)}>
+          <Text style={{ color: colorScheme[theme].text }}>
+            {selectedAlbum === '' ? 'All Images' : selectedAlbum}
+          </Text>
+          <Icon
+            style={{ marginLeft: 3, color: colorScheme[theme].subText }}
+            size={20}
+            name={'keyboard-arrow-down'}
+          />
+        </Ripple>
       </View>
     ),
   });
   return (
     <>
+      <Modal isVisible={showModal}>
+        <View
+          style={{
+            backgroundColor: colorScheme[theme].card,
+            padding: 20,
+            borderRadius: 10,
+          }}>
+          <TouchableOpacity
+            onPress={() => {
+              setSelectedAlbum('');
+              setShowModal(false);
+            }}
+            style={{ paddingVertical: 20 }}>
+            <Text style={{ color: colorScheme[theme].subText }}>
+              All Images
+            </Text>
+          </TouchableOpacity>
+          {albums.map(({ label }) => (
+            <TouchableOpacity
+              onPress={() => {
+                setSelectedAlbum(label);
+                setShowModal(false);
+              }}
+              style={{ paddingBottom: 20 }}>
+              <Text style={{ color: colorScheme[theme].subText }}>{label}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+      </Modal>
       <FlatGrid
         spacing={5}
         data={photos}

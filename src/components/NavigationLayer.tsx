@@ -30,7 +30,7 @@ export default function NavigationLayer({ navigation }) {
           name={'DayView'}
           component={DayView}
           options={{
-            title: 'Daily Journal',
+            title: 'Indexing Life',
             headerTitleAlign: 'center',
             headerLeft: () => (
               <Icon
