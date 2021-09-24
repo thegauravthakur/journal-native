@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Image, Text, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  Image,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  Vibration,
+} from 'react-native';
 import CameraRoll, {
   PhotoIdentifier,
 } from '@react-native-community/cameraroll';
@@ -11,34 +18,10 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { reduceSingleImageSize } from '../utils/imageManipulatioin';
 import { IChosenImage } from './types/ImageGallery.types';
+import colorScheme from '../constants/colorScheme';
+import { useRecoilValue } from 'recoil';
+import { themeState } from '../recoil/atom';
 
-const pickerStyle = {
-  inputIOS: {
-    color: 'white',
-    paddingTop: 13,
-    paddingHorizontal: 10,
-    paddingBottom: 12,
-  },
-  inputAndroid: {
-    color: 'white',
-  },
-  placeholderColor: 'white',
-  underline: { borderTopWidth: 0 },
-  icon: {
-    position: 'absolute',
-    backgroundColor: 'transparent',
-    borderTopWidth: 5,
-    borderTopColor: '#00000099',
-    borderRightWidth: 5,
-    borderRightColor: 'transparent',
-    borderLeftWidth: 5,
-    borderLeftColor: 'transparent',
-    width: 0,
-    height: 0,
-    top: 20,
-    right: 15,
-  },
-};
 const ImageGallery = ({ route }) => {
   const { setImages, chooseLimit } = route.params;
   const [mode, setMode] = useState('single');
@@ -46,6 +29,7 @@ const ImageGallery = ({ route }) => {
   const [albums, setAlbums] = useState<any[]>([]);
   const [selectedAlbum, setSelectedAlbum] = useState('');
   const [chosenImages, setChosenImages] = useState<IChosenImage[]>([]);
+  const theme = useRecoilValue(themeState);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -74,6 +58,49 @@ const ImageGallery = ({ route }) => {
     });
   }, [selectedAlbum]);
 
+  const Style = StyleSheet.create({
+    image: {
+      height: 120,
+      resizeMode: 'cover',
+    },
+    ripple: {
+      marginRight: 10,
+      paddingVertical: 5,
+      paddingHorizontal: 10,
+      borderWidth: 1,
+      borderRadius: 5,
+      flexDirection: 'row',
+      alignItems: 'center',
+      borderColor: colorScheme[theme].subText,
+    },
+  });
+  const pickerStyle = {
+    inputIOS: {
+      color: 'white',
+      paddingTop: 13,
+      paddingHorizontal: 10,
+      paddingBottom: 12,
+    },
+    inputAndroid: {
+      color: 'white',
+    },
+    placeholderColor: 'white',
+    underline: { borderTopWidth: 0 },
+    icon: {
+      position: 'absolute',
+      backgroundColor: 'transparent',
+      borderTopWidth: 5,
+      borderTopColor: '#00000099',
+      borderRightWidth: 5,
+      borderRightColor: 'transparent',
+      borderLeftWidth: 5,
+      borderLeftColor: 'transparent',
+      width: 0,
+      height: 0,
+      top: 20,
+      right: 15,
+    },
+  };
   navigation.setOptions({
     title: '',
     headerRight: () => (
@@ -94,7 +121,7 @@ const ImageGallery = ({ route }) => {
             .then(() => navigation.goBack());
         }}
         style={Style.ripple}>
-        <Text>Submit</Text>
+        <Text style={{ color: colorScheme[theme].text }}>Submit</Text>
       </Ripple>
     ),
     headerLeft: () => (
@@ -105,18 +132,21 @@ const ImageGallery = ({ route }) => {
           style={{ padding: 10, marginRight: 5 }}
           size={25}
           name={'keyboard-backspace'}
+          color={colorScheme[theme].subText}
         />
         <RNPickerSelect
           placeholder={{ label: 'All Images', value: null }}
           style={pickerStyle}
           useNativeAndroidPickerStyle={false}
-          modalProps={{ style: { backgroundColor: 'red' } }}
+          modalProps={{ style: { backgroundColor: 'black' } }}
           onValueChange={value => setSelectedAlbum(value ? value.title : '')}
           items={albums}>
           <Ripple style={Style.ripple}>
-            <Text>{selectedAlbum === '' ? 'All Images' : selectedAlbum}</Text>
+            <Text style={{ color: colorScheme[theme].text }}>
+              {selectedAlbum === '' ? 'All Images' : selectedAlbum}
+            </Text>
             <Icon
-              style={{ marginLeft: 3 }}
+              style={{ marginLeft: 3, color: colorScheme[theme].subText }}
               size={20}
               name={'keyboard-arrow-down'}
             />
@@ -141,6 +171,7 @@ const ImageGallery = ({ route }) => {
                 { uri: item.node.image.uri, type: item.node.type },
               ];
               setChosenImages(temp);
+              Vibration.vibrate(30);
             }}
             onPress={async () => {
               console.log(item.node);
@@ -209,19 +240,3 @@ const ImageGallery = ({ route }) => {
 };
 
 export default ImageGallery;
-
-const Style = StyleSheet.create({
-  image: {
-    height: 120,
-    resizeMode: 'cover',
-  },
-  ripple: {
-    marginRight: 10,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderRadius: 5,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-});

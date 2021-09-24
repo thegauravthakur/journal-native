@@ -41,7 +41,8 @@ const Initiator = () => {
           setRootViewBackgroundColor(colorScheme.dark.card);
         }
       })
-      .finally(() => setLoading(false));
+      .finally(() => setLoading(false))
+      .catch(() => setRootViewBackgroundColor(colorScheme.dark.card));
   }, []);
   if (loading)
     return (
