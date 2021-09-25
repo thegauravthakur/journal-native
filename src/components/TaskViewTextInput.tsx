@@ -63,7 +63,7 @@ const TaskViewTextInput = ({
           console.log(e.currentTarget);
           setDescriptionHeight(e.nativeEvent.contentSize.height);
         }}
-        placeholder={'Save a memory...'}
+        placeholder={'Add a memory...'}
         placeholderTextColor={colorScheme[theme].subText}
       />
     </>

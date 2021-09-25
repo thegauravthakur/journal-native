@@ -22,10 +22,16 @@ const themeState = atom({
   default: 'dark',
 });
 
+const markedDateState = atom({
+  key: 'markedDateState',
+  default: {},
+});
+
 export {
   titleInputState,
   descriptionInputState,
   activeDateState,
   spinnerState,
   themeState,
+  markedDateState,
 };

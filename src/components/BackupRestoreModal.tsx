@@ -16,6 +16,8 @@ import Share from 'react-native-share';
 import getRealm from '../services/realm';
 import RNRestart from 'react-native-restart';
 import colorScheme from '../constants/colorScheme';
+import { DBType } from '../services/services.types';
+import { SHUFFLE_KEY } from 'react-native-dotenv';
 
 function ModalTester({ isModalVisible, setModalVisible }) {
   const [errorMessage, setErrorMessage] = useState('');
@@ -29,7 +31,7 @@ function ModalTester({ isModalVisible, setModalVisible }) {
         setErrorMessage('Password length should be greater than 4 characters');
         return;
       } else setErrorMessage('');
-
+      const updatedPassword = password + SHUFFLE_KEY;
       setSpinner({ visible: true, textContent: '' });
       const isExists = await RNFS.exists(
         RNFS.DocumentDirectoryPath + '/backup',
@@ -37,13 +39,13 @@ function ModalTester({ isModalVisible, setModalVisible }) {
       if (!isExists) await RNFS.mkdir(RNFS.DocumentDirectoryPath + '/backup');
       await RNFS.copyFile(
         realm.path,
-        RNFS.DocumentDirectoryPath + '/backup/myrealm2.realm',
+        RNFS.DocumentDirectoryPath + `/backup/${DBType.name}`,
       );
       console.log('copy file done!');
       const path = await zipWithPassword(
         RNFS.DocumentDirectoryPath + '/backup',
         RNFS.DocumentDirectoryPath + '/backupSuper.zip',
-        password,
+        updatedPassword,
       );
       console.log('zip done successfully!');
       setSpinner({ visible: false, textContent: '' });
@@ -65,7 +67,7 @@ function ModalTester({ isModalVisible, setModalVisible }) {
         setErrorMessage('Password length should be greater than 4 characters');
         return;
       } else setErrorMessage('');
-
+      const updatedPassword = password + SHUFFLE_KEY;
       const { uri } = await DocumentPicker.pickSingle();
       setSpinner({ visible: true, textContent: '' });
       await RNFS.copyFile(
@@ -76,12 +78,12 @@ function ModalTester({ isModalVisible, setModalVisible }) {
       await unzipWithPassword(
         RNFS.DocumentDirectoryPath + '/' + 'superRestore.zip',
         RNFS.DocumentDirectoryPath,
-        password,
+        updatedPassword,
       );
       setSpinner({ visible: false, textContent: '' });
       RNRestart.Restart();
     } catch (e) {
-      console.log('Error occurred while restoring', e);
+      console.log('error occurred while restoring');
     }
   };
   const Style = StyleSheet.create({

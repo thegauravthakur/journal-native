@@ -127,6 +127,7 @@ export function TaskView({ route }) {
       borderWidth: 1,
       borderRadius: 5,
       color: colorScheme[theme].text,
+      borderColor: colorScheme[theme].text,
     },
     ripple__button: {
       color: colorScheme[theme].text,
@@ -156,7 +157,7 @@ export function TaskView({ route }) {
   });
 
   navigation.setOptions({
-    title: isNew ? 'Save a memory' : 'Edit a memory',
+    title: isNew ? 'Add a memory' : 'Edit a memory',
     headerRight: () => (
       <Ripple
         onPress={async () => {

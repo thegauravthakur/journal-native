@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import Ripple from 'react-native-material-ripple';
 import { Calendar } from 'react-native-calendars';
 import { useRecoilState } from 'recoil';
-import { activeDateState, themeState } from '../recoil/atom';
+import { activeDateState, markedDateState, themeState } from '../recoil/atom';
 import { IEvent } from './types/DayView.types';
 import { getEventDataForDate } from '../services/transaction';
 import { getEventsToMarkOnCalendar } from '../utils/Calendar';
@@ -22,7 +22,7 @@ export function DayView() {
   const navigation = useNavigation();
   const [data, setData] = useState<IEvent[]>([]);
   const [showPermissionModal, setShowPermissionModal] = useState(false);
-  const [markedDates, setMarkedDates] = useState({});
+  const [markedDates, setMarkedDates] = useRecoilState(markedDateState);
   const [activeDate, setActiveDate] = useRecoilState(activeDateState);
   const [theme, setTheme] = useRecoilState(themeState);
   const MMKV = new MMKVStorage.Loader().initialize();

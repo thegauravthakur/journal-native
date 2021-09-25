@@ -101,7 +101,7 @@ export function AddTaskInput({ setData }) {
             if (!check) setShow(false);
           }, 10);
         }}
-        placeholder={'Save a memory'}
+        placeholder={'Add a memory'}
         placeholderTextColor={colorScheme[theme].subText}
       />
       {show && (

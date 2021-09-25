@@ -16,11 +16,12 @@ import {
 } from '@react-navigation/drawer';
 import { useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { themeState } from '../recoil/atom';
+import { activeDateState, markedDateState, themeState } from '../recoil/atom';
 import { StatusBar, Text, View } from 'react-native';
 import colorScheme from '../constants/colorScheme';
 import MMKVStorage from 'react-native-mmkv-storage';
 import { setRootViewBackgroundColor } from '@pnthach95/react-native-root-view-background';
+import { Calendar } from 'react-native-calendars';
 
 const Initiator = () => {
   const Drawer = createDrawerNavigator();
@@ -28,6 +29,8 @@ const Initiator = () => {
   const [theme, setTheme] = useRecoilState(themeState);
   const [loading, setLoading] = useState(true);
   const MMKV = new MMKVStorage.Loader().initialize();
+  const markedDates = useRecoilValue(markedDateState);
+  const [activeDate, setActiveDate] = useRecoilState(activeDateState);
 
   useEffect(() => {
     MMKV.getStringAsync('theme')
@@ -64,7 +67,15 @@ const Initiator = () => {
         <Drawer.Navigator
           initialRouteName={'EventView'}
           defaultScreenOptions={{ headerShown: false }}
-          drawerContent={props => CustomDrawerContent(props, setModalVisible)}>
+          drawerContent={props =>
+            CustomDrawerContent(props, {
+              setModalVisible,
+              theme,
+              markedDates,
+              activeDate,
+              setActiveDate,
+            })
+          }>
           <Drawer.Screen
             options={{
               headerShown: false,
@@ -96,7 +107,10 @@ const Initiator = () => {
   );
 };
 
-function CustomDrawerContent(props, setModalVisible) {
+function CustomDrawerContent(
+  props,
+  { setModalVisible, theme, markedDates, activeDate, setActiveDate },
+) {
   return (
     <DrawerContentScrollView {...props}>
       <DrawerItemList {...props} />
@@ -106,6 +120,23 @@ function CustomDrawerContent(props, setModalVisible) {
         )}
         label='Backup | Restore'
         onPress={() => setModalVisible(true)}
+      />
+
+      <Calendar
+        theme={colorScheme[theme].calendarTheme}
+        key={theme}
+        markedDates={markedDates}
+        current={activeDate}
+        onDayPress={({ timestamp }) => {
+          setActiveDate(new Date(timestamp));
+          props.navigation.navigate('DayView');
+        }}
+        style={{
+          borderWidth: 0.8,
+          margin: 5,
+          borderRadius: 10,
+          borderColor: colorScheme[theme].text,
+        }}
       />
     </DrawerContentScrollView>
   );
