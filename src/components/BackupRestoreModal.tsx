@@ -104,9 +104,9 @@ function ModalTester({ isModalVisible, setModalVisible }) {
     ErrorMessage: {
       borderWidth: 1,
       borderColor: colorScheme[theme].subText,
-      padding: 0,
+      color: colorScheme[theme].subText,
       paddingVertical: 2,
-      paddingHorizontal: 4,
+      paddingHorizontal: 10,
       borderRadius: 5,
     },
     Title: {
@@ -122,8 +122,8 @@ function ModalTester({ isModalVisible, setModalVisible }) {
     },
     Wrapper: {
       backgroundColor: colorScheme[theme].card,
-      paddingVertical: 20,
-      paddingHorizontal: 10,
+      paddingVertical: 30,
+      paddingHorizontal: 20,
       borderRadius: 10,
     },
     ErrorMessageText: {
@@ -146,6 +146,7 @@ function ModalTester({ isModalVisible, setModalVisible }) {
         <Text style={Style.Title}>Backup Restore Hub</Text>
         <Text style={Style.SubText}>Backup and restore your database</Text>
         <TextInput
+          secureTextEntry
           onChangeText={text => setPassword(text)}
           value={password}
           placeholder={'Enter password'}

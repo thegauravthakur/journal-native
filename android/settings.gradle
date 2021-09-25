@@ -1,4 +1,4 @@
-rootProject.name = 'EverydayJournal'
+rootProject.name = 'IndexingLife'
 include ':@react-native-community_cameraroll'
 include ':react-native-fs'
 project(':react-native-fs').projectDir = new File(settingsDir, '../node_modules/react-native-fs/android')

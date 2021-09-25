@@ -26,7 +26,7 @@ export const PermissionModal = ({
             fontWeight: 'bold',
             fontSize: 18,
             paddingBottom: 10,
-            color: '#1E40AF',
+            color: colorScheme[theme].permissionModalTitle,
           }}>
           Permission Required!
         </Text>

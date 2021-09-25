@@ -35,11 +35,11 @@ const ImageGallery = ({ route }) => {
 
   useEffect(() => {
     CameraRoll.getAlbums({ assetType: 'Photos' }).then(d => {
-      const temp = [];
+      const temp: { label: string }[] = [];
       d.forEach(data => {
         temp.push({
           label: data.title,
-          value: { count: data.count, title: data.title },
+          // value: { count: data.count, title: data.title },
         });
       });
       setAlbums(temp);
@@ -96,7 +96,13 @@ const ImageGallery = ({ route }) => {
             .then(() => navigation.goBack());
         }}
         style={Style.ripple}>
-        <Text style={{ color: colorScheme[theme].text }}>Submit</Text>
+        <Text style={{ color: colorScheme[theme].text }}>
+          {chosenImages.length === 0
+            ? 'Submit'
+            : `Add ${chosenImages.length} ${
+                chosenImages.length === 1 ? 'image' : 'images'
+              }`}
+        </Text>
       </Ripple>
     ),
     headerLeft: () => (
@@ -112,7 +118,11 @@ const ImageGallery = ({ route }) => {
 
         <Ripple style={Style.ripple} onPress={() => setShowModal(true)}>
           <Text style={{ color: colorScheme[theme].text }}>
-            {selectedAlbum === '' ? 'All Images' : selectedAlbum}
+            {selectedAlbum === ''
+              ? 'All Images'
+              : selectedAlbum.length > 15
+              ? selectedAlbum.substring(0, 15 - 3) + '...'
+              : selectedAlbum}
           </Text>
           <Icon
             style={{ marginLeft: 3, color: colorScheme[theme].subText }}
@@ -125,7 +135,10 @@ const ImageGallery = ({ route }) => {
   });
   return (
     <>
-      <Modal isVisible={showModal}>
+      <Modal
+        onBackButtonPress={() => setShowModal(false)}
+        onBackdropPress={() => setShowModal(false)}
+        isVisible={showModal}>
         <View
           style={{
             backgroundColor: colorScheme[theme].card,

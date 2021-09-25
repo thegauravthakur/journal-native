@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "EverydayJournal.app"
-               BlueprintName = "EverydayJournal"
-               ReferencedContainer = "container:EverydayJournal.xcodeproj">
+               BuildableName = "IndexingLife.app"
+               BlueprintName = "IndexingLife"
+               ReferencedContainer = "container:IndexingLife.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "EverydayJournalTests.xctest"
-               BlueprintName = "EverydayJournalTests"
-               ReferencedContainer = "container:EverydayJournal.xcodeproj">
+               BuildableName = "IndexingLifeTests.xctest"
+               BlueprintName = "IndexingLifeTests"
+               ReferencedContainer = "container:IndexingLife.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "EverydayJournal.app"
-            BlueprintName = "EverydayJournal"
-            ReferencedContainer = "container:EverydayJournal.xcodeproj">
+            BuildableName = "IndexingLife.app"
+            BlueprintName = "IndexingLife"
+            ReferencedContainer = "container:IndexingLife.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "EverydayJournal.app"
-            BlueprintName = "EverydayJournal"
-            ReferencedContainer = "container:EverydayJournal.xcodeproj">
+            BuildableName = "IndexingLife.app"
+            BlueprintName = "IndexingLife"
+            ReferencedContainer = "container:IndexingLife.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

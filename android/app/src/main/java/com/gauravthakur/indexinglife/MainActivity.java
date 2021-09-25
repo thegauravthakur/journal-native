@@ -1,4 +1,4 @@
-package com.everydayjournal;
+package com.gauravthakur.indexinglife;
 import android.os.Bundle; // here
 
 import com.facebook.react.ReactActivity;
@@ -12,7 +12,7 @@ public class MainActivity extends ReactActivity {
    */
   @Override
   protected String getMainComponentName() {
-    return "EverydayJournal";
+    return "IndexingLife";
   }
 
   @Override

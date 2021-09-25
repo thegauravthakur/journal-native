@@ -77,7 +77,7 @@ export function AddTaskInput({ setData }) {
             }, 10);
           }}
           placeholder={'Title'}
-          placeholderTextColor={colorScheme[theme].text}
+          placeholderTextColor={colorScheme[theme].subText}
         />
       )}
       <TextInput
@@ -101,8 +101,8 @@ export function AddTaskInput({ setData }) {
             if (!check) setShow(false);
           }, 10);
         }}
-        placeholder={'Take a note'}
-        placeholderTextColor={colorScheme[theme].text}
+        placeholder={'Save a memory'}
+        placeholderTextColor={colorScheme[theme].subText}
       />
       {show && (
         <View

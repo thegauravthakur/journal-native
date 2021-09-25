@@ -32,10 +32,6 @@ import {
   insertAndCleanImages,
 } from '../services/transaction';
 import { StackNavigationProp } from '@react-navigation/stack';
-import getRealm from '../services/realm';
-import { PermissionModal } from '../components/PermissionModal';
-import { check, PERMISSIONS } from 'react-native-permissions';
-import { checkIfPermissionAreGranted } from '../services/permissions';
 import colorScheme from '../constants/colorScheme';
 
 export function TaskView({ route }) {
@@ -130,10 +126,10 @@ export function TaskView({ route }) {
       paddingHorizontal: 10,
       borderWidth: 1,
       borderRadius: 5,
-      borderColor: 'white',
+      color: colorScheme[theme].text,
     },
     ripple__button: {
-      color: 'white',
+      color: colorScheme[theme].text,
     },
     footerWrapper: {
       flexDirection: 'row',
@@ -160,6 +156,7 @@ export function TaskView({ route }) {
   });
 
   navigation.setOptions({
+    title: isNew ? 'Save a memory' : 'Edit a memory',
     headerRight: () => (
       <Ripple
         onPress={async () => {
@@ -171,7 +168,7 @@ export function TaskView({ route }) {
             if (!isNew) {
               const Event = await getAllEvents();
               const target = Event.filtered(`_id == "${_id}"`);
-
+              // @ts-ignore
               const Image = target[0].images;
               // @ts-ignore
               const imagesToDelete = Image.filter(image => {
@@ -193,7 +190,7 @@ export function TaskView({ route }) {
           navigation.goBack();
         }}
         style={Style.ripple}>
-        <Text style={Style.ripple__button}>submit</Text>
+        <Text style={Style.ripple__button}>save</Text>
       </Ripple>
     ),
   });

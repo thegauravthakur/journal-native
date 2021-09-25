@@ -26,7 +26,7 @@ const TaskViewTextInput = ({
       fontFamily: 'segoeui',
     },
     descriptionInput: {
-      color: colorScheme[theme].subText,
+      color: colorScheme[theme].text,
       padding: 0,
       fontSize: 16,
       paddingHorizontal: 5,
@@ -63,7 +63,7 @@ const TaskViewTextInput = ({
           console.log(e.currentTarget);
           setDescriptionHeight(e.nativeEvent.contentSize.height);
         }}
-        placeholder={'Take a note'}
+        placeholder={'Save a memory...'}
         placeholderTextColor={colorScheme[theme].subText}
       />
     </>
