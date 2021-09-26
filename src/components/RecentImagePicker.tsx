@@ -1,18 +1,14 @@
 import CameraRoll, {
   PhotoIdentifier,
 } from '@react-native-community/cameraroll';
-import {
-  Image,
-  ScrollView,
-  StyleSheet,
-  TouchableHighlight,
-  View,
-} from 'react-native';
+import { Image, ScrollView, TouchableHighlight, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { reduceSingleImageSize } from '../utils/imageManipulatioin';
+import getStyles from './RecentImagePicker.styles';
 
 export function RecentImagePicker({ setImage }) {
   const [photos, setPhotos] = useState<PhotoIdentifier[]>([]);
+  const Style = getStyles();
 
   useEffect(() => {
     CameraRoll.getPhotos({
@@ -58,12 +54,3 @@ export function RecentImagePicker({ setImage }) {
     </View>
   );
 }
-
-const Style = StyleSheet.create({
-  image: {
-    width: 100,
-    height: 100,
-    margin: 5,
-    borderRadius: 10,
-  },
-});

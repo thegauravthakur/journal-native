@@ -1,40 +1,15 @@
-import {
-  Dimensions,
-  Image as Img,
-  StyleSheet,
-  View,
-  ScrollView,
-} from 'react-native';
+import { Dimensions, Image as Img, View, ScrollView } from 'react-native';
 import Image from 'react-native-scalable-image';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import React from 'react';
 import colorScheme from '../constants/colorScheme';
 import { useRecoilValue } from 'recoil';
 import { themeState } from '../recoil/atom';
+import getStyles from './SelectedImages.styles';
 
 export function SelectedImages({ images, setImages }) {
   const theme = useRecoilValue(themeState);
-
-  const Style = StyleSheet.create({
-    image: {
-      marginVertical: 20,
-      borderRadius: 15,
-      overlayColor: colorScheme[theme].overlayColor,
-    },
-    imgContainer: {
-      flex: 1,
-      alignItems: 'center',
-    },
-    closeIcon: {
-      position: 'absolute',
-      top: 40,
-      right: 40,
-      backgroundColor: '#172234',
-      color: 'white',
-      borderRadius: 25,
-      padding: 2,
-    },
-  });
+  const Style = getStyles(theme);
 
   return (
     <View>

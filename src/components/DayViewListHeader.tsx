@@ -15,46 +15,14 @@ import uuid from 'react-native-uuid';
 import getRealm from '../services/realm';
 import { getEventDataForDate } from '../services/transaction';
 import colorScheme from '../constants/colorScheme';
+import getStyle from './DayViewListHeader.styles';
 
 export function DayViewListHeader({ setData, data }) {
   const [title, setTitle] = useRecoilState(titleInputState);
   const [description, setDescription] = useRecoilState(descriptionInputState);
   const activeDate = useRecoilValue(activeDateState);
   const theme = useRecoilValue(themeState);
-  const Style = StyleSheet.create({
-    selectedDate: {
-      fontSize: 29,
-      marginLeft: 12,
-      marginBottom: 30,
-      color: colorScheme[theme].text,
-    },
-    container: {
-      paddingTop: 10,
-      marginLeft: 20,
-      paddingLeft: 25,
-      paddingBottom: 30,
-      borderLeftWidth: 2,
-      borderColor: colorScheme[theme].borderEvent,
-    },
-    icon: {
-      borderRadius: 100,
-      padding: 8,
-      backgroundColor: colorScheme[theme].icon,
-    },
-    ripple: {
-      position: 'absolute',
-      left: 5,
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 5,
-      },
-      shadowOpacity: 0.34,
-      shadowRadius: 6.27,
-      elevation: 10,
-      borderRadius: 100,
-    },
-  });
+  const Style = getStyle(theme);
   const onClickHandler = async () => {
     const realm = await getRealm();
     const finalTitle = title.trim();

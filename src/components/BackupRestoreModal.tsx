@@ -1,11 +1,5 @@
 import React, { useState } from 'react';
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Modal from 'react-native-modal';
 import DocumentPicker from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
@@ -18,11 +12,13 @@ import RNRestart from 'react-native-restart';
 import colorScheme from '../constants/colorScheme';
 import { DBType } from '../services/services.types';
 import { SHUFFLE_KEY } from 'react-native-dotenv';
+import getStyles from './BackupRestoreModal.styles';
 
 function ModalTester({ isModalVisible, setModalVisible }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [password, setPassword] = useState('');
   const theme = useRecoilValue(themeState);
+  const Style = getStyles(theme);
   const setSpinner = useSetRecoilState(spinnerState);
   const onBackupPress = async () => {
     try {
@@ -86,55 +82,6 @@ function ModalTester({ isModalVisible, setModalVisible }) {
       console.log('error occurred while restoring');
     }
   };
-  const Style = StyleSheet.create({
-    RestoreText: {
-      textAlign: 'center',
-      backgroundColor: '#2563EB',
-      color: '#FFFFFF',
-      paddingVertical: 8,
-      marginBottom: 10,
-      borderRadius: 10,
-    },
-    BackupText: {
-      textAlign: 'center',
-      backgroundColor: '#10B981',
-      color: '#FFFFFF',
-      paddingVertical: 8,
-      marginBottom: 10,
-      borderRadius: 10,
-    },
-    ErrorMessage: {
-      borderWidth: 1,
-      borderColor: colorScheme[theme].subText,
-      color: colorScheme[theme].subText,
-      paddingVertical: 2,
-      paddingHorizontal: 10,
-      borderRadius: 5,
-    },
-    Title: {
-      fontSize: 17,
-      paddingBottom: 5,
-      fontWeight: 'bold',
-      color: colorScheme[theme].text,
-    },
-    SubText: {
-      fontSize: 14,
-      paddingBottom: 20,
-      color: colorScheme[theme].subText,
-    },
-    Wrapper: {
-      backgroundColor: colorScheme[theme].card,
-      paddingVertical: 30,
-      paddingHorizontal: 20,
-      borderRadius: 10,
-    },
-    ErrorMessageText: {
-      paddingBottom: 10,
-      color: colorScheme[theme].errorColor,
-    },
-    Message: { color: '#6B7280' },
-    SubHeading: { fontWeight: 'bold' },
-  });
   return (
     <Modal
       onLayout={() => {

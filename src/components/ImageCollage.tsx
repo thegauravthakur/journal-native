@@ -1,7 +1,6 @@
 import {
   Dimensions,
   Image as Img,
-  StyleSheet,
   View,
   Modal,
   TouchableOpacity,
@@ -12,31 +11,17 @@ import ImageViewer from 'react-native-image-zoom-viewer';
 import { useRecoilValue } from 'recoil';
 import { themeState } from '../recoil/atom';
 import colorScheme from '../constants/colorScheme';
+import getStyles from './ImageCollage.styles';
 
 export function ImageCollage({ images }) {
   const theme = useRecoilValue(themeState);
+  const Style = getStyles();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [bigImageModal, setBigImageModal] = useState(false);
   const updatedImageObj = images.map(({ uri: url, ...rest }) => ({
     url,
     ...rest,
   }));
-  const Style = StyleSheet.create({
-    singleImage: {
-      marginTop: 20,
-      borderRadius: 15,
-    },
-    singleImgContainer: {
-      flex: 1,
-      alignItems: 'center',
-    },
-    twoImageOuterWrapper: {
-      flexDirection: 'row',
-      marginTop: 20,
-    },
-    FourImageOuterWrapper: { flexDirection: 'row' },
-    twoImageWrapper: { maxWidth: '50%' },
-  });
   return (
     <>
       <Modal visible={bigImageModal} transparent={true}>

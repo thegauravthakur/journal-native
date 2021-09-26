@@ -3,6 +3,7 @@ import React from 'react';
 import { useRecoilValue } from 'recoil';
 import { themeState } from '../recoil/atom';
 import colorScheme from '../constants/colorScheme';
+import getStyles from './TaskViewTextInput.styles';
 
 const TaskViewTextInput = ({
   inputTitle,
@@ -15,25 +16,8 @@ const TaskViewTextInput = ({
   setTitleHeight,
 }) => {
   const theme = useRecoilValue(themeState);
-  const Style = StyleSheet.create({
-    titleInput: {
-      fontWeight: 'bold',
-      color: colorScheme[theme].text,
-      padding: 0,
-      fontSize: 19,
-      paddingVertical: 10,
-      paddingHorizontal: 5,
-      fontFamily: 'segoeui',
-    },
-    descriptionInput: {
-      color: colorScheme[theme].text,
-      padding: 0,
-      fontSize: 16,
-      paddingHorizontal: 5,
-      lineHeight: 25,
-      fontFamily: 'segoeui',
-    },
-  });
+  const Style = getStyles(theme);
+
   return (
     <>
       <TextInput

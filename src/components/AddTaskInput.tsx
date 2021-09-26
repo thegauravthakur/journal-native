@@ -13,6 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import { isToday } from 'date-fns';
 import { StackNavigationProp } from '@react-navigation/stack';
 import colorScheme from '../constants/colorScheme';
+import getTheme from './AddTaskInput.styles';
 
 export function AddTaskInput({ setData }) {
   const navigation = useNavigation<StackNavigationProp<any>>(); //todo
@@ -24,38 +25,10 @@ export function AddTaskInput({ setData }) {
   const activeDate = useRecoilValue(activeDateState);
   const ref = useRef<TextInput>(null);
   const theme = useRecoilValue(themeState);
+  const Style = getTheme(theme);
   const enableEdit = isToday(activeDate);
   let check = false;
   let check2 = false;
-
-  const Style = StyleSheet.create({
-    container: {
-      borderWidth: 1,
-      marginHorizontal: 5,
-      borderRadius: 10,
-      borderColor: colorScheme[theme].subText,
-      marginTop: -7,
-      marginBottom: 20,
-    },
-    titleInput: {
-      fontWeight: 'bold',
-      color: colorScheme[theme].text,
-      padding: 0,
-      fontSize: 18,
-      paddingVertical: 10,
-      paddingHorizontal: 5,
-    },
-    descriptionInput: {
-      color: colorScheme[theme].text,
-      padding: 0,
-      fontSize: 16,
-      paddingVertical: 10,
-      paddingHorizontal: 5,
-    },
-    expandIcon: {
-      padding: 8,
-    },
-  });
 
   return (
     <View style={Style.container}>

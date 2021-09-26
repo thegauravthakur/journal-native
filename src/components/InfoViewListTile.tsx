@@ -1,4 +1,4 @@
-import { Linking, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import React from 'react';
 import Ripple from 'react-native-material-ripple';
