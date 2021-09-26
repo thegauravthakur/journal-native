@@ -51,12 +51,13 @@ export function TaskView({ route }) {
   const navigation = useNavigation<StackNavigationProp<any>>();
 
   useEffect(() => {
+    const myTheme = theme.charAt(0).toUpperCase() + theme.slice(1);
     GiphySDK.configure({ apiKey: GIPHY_KEY });
     GiphyDialog.configure({
       fileType: GiphyFileExtension.GIF,
-      theme: GiphyThemePreset.Light,
+      theme: GiphyThemePreset[myTheme],
     });
-  }, []);
+  }, [theme]);
 
   useEffect(() => {
     const handler: GiphyDialogMediaSelectEventHandler = e => {
@@ -161,9 +162,11 @@ export function TaskView({ route }) {
     headerRight: () => (
       <Ripple
         onPress={async () => {
+          const finalTitle = inputTitle.trim();
+          const finalDescription = inputDescription.trim();
           if (
-            inputTitle.length > 0 ||
-            inputDescription.length > 0 ||
+            finalTitle.length > 0 ||
+            finalDescription.length > 0 ||
             images.length > 0
           )
             if (!isNew) {
@@ -178,12 +181,12 @@ export function TaskView({ route }) {
               });
               await insertAndCleanImages(
                 imagesToDelete,
-                inputTitle,
-                inputDescription,
+                finalTitle,
+                finalDescription,
                 images,
                 target,
               );
-            } else await createNewEvent(inputTitle, inputDescription, images);
+            } else await createNewEvent(finalTitle, finalDescription, images);
 
           setTitle('');
           setDescription('');

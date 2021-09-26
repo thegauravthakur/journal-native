@@ -36,7 +36,7 @@ export function DayViewEvent({ item, isEnd, index, setData }) {
     container: {
       marginLeft: 20,
       marginRight: 5,
-      paddingLeft: 25,
+      paddingLeft: 30,
       paddingBottom: 30,
       borderLeftWidth: 2,
       borderColor: colorScheme[theme].borderEvent,

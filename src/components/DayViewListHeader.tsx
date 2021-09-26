@@ -57,11 +57,13 @@ export function DayViewListHeader({ setData, data }) {
   });
   const onClickHandler = async () => {
     const realm = await getRealm();
-    if (title || description) {
+    const finalTitle = title.trim();
+    const finalDescription = description.trim();
+    if (finalTitle.length > 0 || finalDescription.length > 0) {
       realm.write(() => {
         realm.create('Event', {
-          title,
-          description,
+          title: finalTitle,
+          description: finalDescription,
           createdAt: new Date(),
           images: [],
           _id: uuid.v4(),
