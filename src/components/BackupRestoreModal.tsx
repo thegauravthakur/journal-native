@@ -148,6 +148,8 @@ function ModalTester({ isModalVisible, setModalVisible }) {
         <Text style={Style.Title}>Backup Restore Hub</Text>
         <Text style={Style.SubText}>Backup and restore your database</Text>
         <TextInput
+          autoCompleteType={'password'}
+          importantForAutofill={'yes'}
           secureTextEntry
           onChangeText={text => setPassword(text)}
           value={password}

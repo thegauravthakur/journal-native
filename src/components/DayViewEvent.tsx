@@ -35,7 +35,7 @@ export function DayViewEvent({ item, isEnd, index, setData }) {
     },
     container: {
       marginLeft: 20,
-      marginRight: 5,
+      marginRight: 20,
       paddingLeft: 30,
       paddingBottom: 30,
       borderLeftWidth: 2,

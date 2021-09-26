@@ -30,7 +30,10 @@ export function ImageCollage({ images }) {
       flex: 1,
       alignItems: 'center',
     },
-    twoImageOuterWrapper: { flexDirection: 'row', marginTop: 20 },
+    twoImageOuterWrapper: {
+      flexDirection: 'row',
+      marginTop: 20,
+    },
     FourImageOuterWrapper: { flexDirection: 'row' },
     twoImageWrapper: { maxWidth: '50%' },
   });
@@ -59,7 +62,7 @@ export function ImageCollage({ images }) {
                 Style.singleImage,
                 { overlayColor: colorScheme[theme].overlayColor },
               ]}
-              width={Dimensions.get('window').width - 50}
+              width={Dimensions.get('window').width - 65}
               source={{ uri: images[0].uri }}
             />
           </TouchableOpacity>
