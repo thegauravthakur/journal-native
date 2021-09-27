@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, ToastAndroid, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import Ripple from 'react-native-material-ripple';
@@ -33,6 +33,7 @@ import {
 } from '../services/transaction';
 import { StackNavigationProp } from '@react-navigation/stack';
 import colorScheme from '../constants/colorScheme';
+import getStyles from './TaskView.styles';
 
 export function TaskView({ route }) {
   const [titleHeight, setTitleHeight] = useState();
@@ -49,6 +50,7 @@ export function TaskView({ route }) {
   const setDescription = useSetRecoilState(descriptionInputState);
   const activeDate = useRecoilValue(activeDateState);
   const navigation = useNavigation<StackNavigationProp<any>>();
+  const Style = getStyles(theme);
 
   useEffect(() => {
     const myTheme = theme.charAt(0).toUpperCase() + theme.slice(1);
@@ -95,68 +97,6 @@ export function TaskView({ route }) {
     };
   }, [images]);
 
-  const Style = StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: 'space-between',
-    },
-    titleInput: {
-      fontWeight: 'bold',
-      color: 'black',
-      padding: 0,
-      fontSize: 19,
-      paddingVertical: 10,
-      paddingHorizontal: 5,
-      fontFamily: 'segoeui',
-    },
-    descriptionInput: {
-      color: 'black',
-      padding: 0,
-      fontSize: 16,
-      paddingHorizontal: 5,
-      lineHeight: 25,
-      fontFamily: 'segoeui',
-    },
-    icon: {
-      borderRadius: 100,
-      padding: 9,
-    },
-    ripple: {
-      marginRight: 10,
-      paddingVertical: 5,
-      paddingHorizontal: 10,
-      borderWidth: 1,
-      borderRadius: 5,
-      color: colorScheme[theme].text,
-      borderColor: colorScheme[theme].text,
-    },
-    ripple__button: {
-      color: colorScheme[theme].text,
-    },
-    footerWrapper: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      paddingHorizontal: 10,
-      marginVertical: 5,
-    },
-    footerFirstHalf: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      flex: 1,
-    },
-    deleteIcon: {
-      padding: 10,
-    },
-    gifIcon: {
-      borderWidth: 1,
-      marginHorizontal: 10,
-      borderColor: colorScheme[theme].text,
-    },
-    pictureIcon: {
-      padding: 10,
-    },
-  });
-
   navigation.setOptions({
     title: isNew ? 'Add a memory' : 'Edit a memory',
     headerRight: () => (
@@ -186,7 +126,13 @@ export function TaskView({ route }) {
                 images,
                 target,
               );
+              ToastAndroid.show('Event added!', ToastAndroid.SHORT);
             } else await createNewEvent(finalTitle, finalDescription, images);
+          else
+            ToastAndroid.show(
+              'Please add an image or a text!',
+              ToastAndroid.SHORT,
+            );
 
           setTitle('');
           setDescription('');
@@ -204,6 +150,7 @@ export function TaskView({ route }) {
       await deleteEvent(_id);
       setData(await getEventDataForDate(activeDate));
     }
+    ToastAndroid.show('Event Deleted!', ToastAndroid.SHORT);
     navigation.goBack();
   };
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, ToastAndroid } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import Ripple from 'react-native-material-ripple';
 import { AddTaskInput } from './AddTaskInput';
@@ -23,6 +23,7 @@ export function DayViewListHeader({ setData, data }) {
   const activeDate = useRecoilValue(activeDateState);
   const theme = useRecoilValue(themeState);
   const Style = getStyle(theme);
+
   const onClickHandler = async () => {
     const realm = await getRealm();
     const finalTitle = title.trim();
@@ -41,7 +42,12 @@ export function DayViewListHeader({ setData, data }) {
       setData(all);
       setTitle('');
       setDescription('');
-    }
+      ToastAndroid.show('Event added!', ToastAndroid.SHORT);
+    } else
+      ToastAndroid.show(
+        'Please add a title or description',
+        ToastAndroid.SHORT,
+      );
   };
   return (
     <View>

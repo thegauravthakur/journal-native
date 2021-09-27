@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, ToastAndroid, View } from 'react-native';
 import { DayViewEvent } from '../components/DayViewEvent';
 import { DayViewListHeader } from '../components/DayViewListHeader';
 import { useNavigation } from '@react-navigation/native';
@@ -62,6 +62,10 @@ export function DayView() {
           setTheme(updatedTheme);
           await MMKV.setStringAsync('theme', updatedTheme);
           setRootViewBackgroundColor(colorScheme[updatedTheme].card);
+          ToastAndroid.show(
+            `Switched to ${updatedTheme} theme!`,
+            ToastAndroid.SHORT,
+          );
         }}
       />
     ),
