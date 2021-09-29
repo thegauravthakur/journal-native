@@ -30,7 +30,7 @@ const InfoView = () => {
               fontWeight: 'bold',
               color: colorScheme[theme].text,
             }}>
-            Everyday Journal
+            Indexing Life
           </Text>
           <Text style={{ fontSize: 13, color: colorScheme[theme].subText }}>
             Version {pkg.version}
@@ -43,7 +43,7 @@ const InfoView = () => {
         title={'Rate me!'}
         onPress={async () => {
           await Linking.openURL(
-            'https://play.google.com/store/apps/details?id=net.one97.paytm',
+            'https://play.google.com/store/apps/details?id=com.gauravthakur.indexinglife',
           );
         }}
       />
