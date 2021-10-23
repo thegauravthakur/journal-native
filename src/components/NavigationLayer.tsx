@@ -8,6 +8,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import { useRecoilValue } from 'recoil';
 import { spinnerState, themeState } from '../recoil/atom';
 import colorScheme from '../constants/colorScheme';
+import { CameraApp } from '../views/CameraView';
 
 type RootStackParamList = {
   DayView: undefined;
@@ -45,6 +46,11 @@ export default function NavigationLayer({ navigation }) {
         />
         <Stack.Screen name={'TaskView'} component={TaskView} />
         <Stack.Screen name={'ImageGallery'} component={ImageGallery} />
+        <Stack.Screen
+          options={{ title: 'Camera' }}
+          name={'CameraScreen'}
+          component={CameraApp}
+        />
       </Stack.Navigator>
     </>
   );

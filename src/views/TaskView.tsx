@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ScrollView, StyleSheet, Text, ToastAndroid, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -34,6 +34,8 @@ import {
 import { StackNavigationProp } from '@react-navigation/stack';
 import colorScheme from '../constants/colorScheme';
 import getStyles from './TaskView.styles';
+import { RNCamera } from 'react-native-camera';
+import { checkAndRequestCameraPermission } from '../services/permissions';
 
 export function TaskView({ route }) {
   const [titleHeight, setTitleHeight] = useState();
@@ -153,7 +155,6 @@ export function TaskView({ route }) {
     ToastAndroid.show('Event Deleted!', ToastAndroid.SHORT);
     navigation.goBack();
   };
-
   return (
     <View style={Style.container}>
       <ScrollView>
@@ -200,6 +201,25 @@ export function TaskView({ route }) {
                 color={colorScheme[theme].text}
                 size={27}
                 name={'photo'}
+              />
+            </Ripple>
+            <Ripple
+              rippleCentered
+              onPress={async () => {
+                const result = await checkAndRequestCameraPermission();
+                const limit = 4 - images.length;
+                if (result && images.length < 4)
+                  navigation.navigate('CameraScreen', {
+                    setImages,
+                    chooseLimit: limit,
+                  });
+              }}
+              style={{ borderRadius: 100 }}>
+              <Icon
+                style={Style.pictureIcon}
+                color={colorScheme[theme].text}
+                size={27}
+                name={'camera'}
               />
             </Ripple>
           </View>

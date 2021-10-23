@@ -54,3 +54,19 @@ export const checkIfPermissionAreGranted = async (
     status[PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE] === 'granted'
   );
 };
+
+export const checkAndRequestCameraPermission = async () => {
+  const status = await checkMultiple([PERMISSIONS.ANDROID.CAMERA]);
+  if (status[PERMISSIONS.ANDROID.CAMERA] === RESULTS.BLOCKED) {
+    await openSettings();
+    return false;
+  }
+  const permissionsToRequest: Permission[] = [];
+  if (status[PERMISSIONS.ANDROID.CAMERA] !== RESULTS.GRANTED)
+    permissionsToRequest.push(PERMISSIONS.ANDROID.CAMERA);
+
+  if (permissionsToRequest.length === 0) return true;
+
+  const result = await requestMultiple(permissionsToRequest);
+  return result[PERMISSIONS.ANDROID.CAMERA] === RESULTS.GRANTED;
+};

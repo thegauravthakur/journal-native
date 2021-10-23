@@ -6287,6 +6287,13 @@ react-native-calendars@^1.1266.0:
   optionalDependencies:
     moment "^2.24.0"
 
+react-native-camera@^4.2.1:
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/react-native-camera/-/react-native-camera-4.2.1.tgz#caf74081f055e89d7e9b0cd5108965d808c60e90"
+  integrity sha512-+Vkql24PFYQfsPRznJCvPwJQfyzCnjlcww/iZ4Ej80bgivKjL9eU0IMQIXp4yi6XCrKi4voWXxIDPMupQZKeIQ==
+  dependencies:
+    prop-types "^15.6.2"
+
 react-native-document-picker@^6.0.4:
   version "6.0.4"
   resolved "https://registry.yarnpkg.com/react-native-document-picker/-/react-native-document-picker-6.0.4.tgz#21cbe2b3e8a1aff4aafcb81e06f09494b45e62f8"
