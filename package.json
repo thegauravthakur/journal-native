@@ -29,6 +29,7 @@
     "react-native-camera": "^4.2.1",
     "react-native-document-picker": "^6.0.4",
     "react-native-dotenv": "^3.2.0",
+    "react-native-ffmpeg": "^0.5.2",
     "react-native-fs": "^2.18.0",
     "react-native-gesture-handler": "^1.10.3",
     "react-native-image-resizer": "^1.4.5",

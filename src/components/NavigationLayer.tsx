@@ -47,7 +47,7 @@ export default function NavigationLayer({ navigation }) {
         <Stack.Screen name={'TaskView'} component={TaskView} />
         <Stack.Screen name={'ImageGallery'} component={ImageGallery} />
         <Stack.Screen
-          options={{ title: 'Camera' }}
+          options={{ title: '' }}
           name={'CameraScreen'}
           component={CameraApp}
         />

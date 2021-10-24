@@ -6308,6 +6308,11 @@ react-native-dotenv@^3.2.0:
   dependencies:
     dotenv "^10.0.0"
 
+react-native-ffmpeg@^0.5.2:
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/react-native-ffmpeg/-/react-native-ffmpeg-0.5.2.tgz#4c60fa4e773ae82ed59628a5f23dd86f74f1c8f5"
+  integrity sha512-YxKWI9kPo4nDtAzNO+MIMIu56rfaixJrviQBKvdvmFD09oWH0GhKurJ+uJOvTbN3T7eEYCE0kUzK1puPDsniAA==
+
 react-native-fs@^2.18.0:
   version "2.18.0"
   resolved "https://registry.yarnpkg.com/react-native-fs/-/react-native-fs-2.18.0.tgz#987b99cc90518ef26663a8d60e62104694b41c21"

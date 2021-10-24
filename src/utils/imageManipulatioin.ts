@@ -2,6 +2,7 @@ import ImageResizer, { ResizeFormat } from 'react-native-image-resizer';
 import RNFS from 'react-native-fs';
 
 export const reduceSingleImageSize = async (imageUri: string, type: string) => {
+  console.log(type);
   const extension = type.substring(type.lastIndexOf('/') + 1, type.length);
   let format: ResizeFormat = 'JPEG';
   if (extension.toLowerCase() === 'png') format = 'PNG';

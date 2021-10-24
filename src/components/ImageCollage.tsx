@@ -37,7 +37,7 @@ export function ImageCollage({ images }) {
       <View>
         {images?.length === 1 && (
           <TouchableOpacity
-            style={Style.singleImgContainer}
+            style={{ ...Style.singleImgContainer }}
             onPress={() => {
               setCurrentIndex(0);
               setBigImageModal(true);
@@ -47,6 +47,7 @@ export function ImageCollage({ images }) {
                 Style.singleImage,
                 { overlayColor: colorScheme[theme].overlayColor },
               ]}
+              maxHeight={350}
               width={Dimensions.get('window').width - 65}
               source={{ uri: images[0].uri }}
             />
