@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "769834226123",
+    "project_id": "everyday-journal-df267",
+    "storage_bucket": "everyday-journal-df267.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:769834226123:android:97e120206ac6c1ec7aa64e",
+        "android_client_info": {
+          "package_name": "com.everydayjournal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "769834226123-7nkcr1jjfg9s89jpi9qum2bjt7e2gblt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.everydayjournal",
+            "certificate_hash": "1d75340158aa7c168af78195a1f8d674cb11293d"
+          }
+        },
+        {
+          "client_id": "769834226123-ojshi9jbl6mtdnakoiohuvaupd5apesl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.everydayjournal",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "769834226123-c3orkkjrb502ko9qjgpe2700f6g71r9v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDyKFqVJrPFn_yIpI1m_nA2BhSGH4xxMHs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "769834226123-c3orkkjrb502ko9qjgpe2700f6g71r9v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

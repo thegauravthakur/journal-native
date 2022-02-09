@@ -10,49 +10,41 @@ import Ripple from 'react-native-material-ripple';
 import firestore from '@react-native-firebase/firestore';
 import { format } from 'date-fns';
 import { LoadingSkeleton } from '../components/LoadingSkeleton';
-import storage from '@react-native-firebase/storage';
-import uuid from 'react-native-uuid';
+import {useQuery} from 'react-query';
 
 export function DayView() {
   const navigation = useNavigation();
   const [user, setUser] = useRecoilState(userState);
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
+  const {data, isLoading} = useQuery('fetch-data', async () => {
     if (user) {
-      firestore()
-        .collection(user.uid)
-        .doc(format(new Date(), 'dd-MM-yyyy'))
-        .get()
-        .then(async docData => {
-          if (docData.exists) {
-            const { events } = docData.data() as any;
-            setData(events);
-            setLoading(false);
-          } else {
-            setLoading(false);
-          }
-        });
-    } else {
-      setLoading(false);
+      const document = await firestore().collection(user.uid).doc(format(new Date(), 'dd-MM-yyyy')).get();
+      const {events} =  document.data() as any;
+      return events;
     }
-  }, [user]);
-  if (loading) {
-    return <LoadingSkeleton />;
-  }
+  });
+  const [events, setEvents] = useState<any>([]);
+  console.log(data);
+  useEffect(() => {
+    setEvents(data);
+  }, [data]);
+
   navigation.setOptions({
     headerRight: () => (
-      <Ripple
-        onPress={async () => {
-          setTimeout(() => setUser(null), 100);
-          await auth().signOut();
-        }}
-        style={Style.ripple}>
-        <Text style={Style.ripple__button}>Logout</Text>
-      </Ripple>
+        <Ripple
+            onPress={async () => {
+              setTimeout(() => setUser(null), 100);
+              await auth().signOut();
+            }}
+            style={Style.ripple}>
+          <Text style={Style.ripple__button}>Logout</Text>
+        </Ripple>
     ),
   });
+
+  if (isLoading) {
+    return <LoadingSkeleton />;
+  }
+
   return (
     <View style={{ flex: 1 }}>
       <FlatList
@@ -60,15 +52,15 @@ export function DayView() {
         style={Style.list}
         keyboardShouldPersistTaps={'handled'}
         ListHeaderComponent={() => (
-          <DayViewListHeader loading={loading} data={data} setData={setData} />
+          <DayViewListHeader loading={isLoading} data={data} setData={setEvents} />
         )}
-        data={data}
+        data={events}
         renderItem={({ item, index }: { item: any; index: number }) => (
           <DayViewEvent
             key={item?.id}
-            isEnd={index === data.length - 1}
+            isEnd={index === events.length - 1}
             item={item}
-            setData={setData}
+            setData={setEvents}
             index={index}
           />
         )}

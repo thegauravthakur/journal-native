@@ -1,12 +1,16 @@
 import * as React from 'react';
 import { RecoilRoot } from 'recoil';
 import { NavigationLayer } from './components/NavigationLayer';
+import {QueryClient, QueryClientProvider} from 'react-query';
 
+const queryClient = new QueryClient();
 function App() {
   return (
-    <RecoilRoot>
-      <NavigationLayer />
-    </RecoilRoot>
+      <QueryClientProvider client={queryClient}>
+        <RecoilRoot>
+          <NavigationLayer />
+        </RecoilRoot>
+      </QueryClientProvider>
   );
 }
 

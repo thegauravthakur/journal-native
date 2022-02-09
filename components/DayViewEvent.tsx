@@ -21,7 +21,7 @@ export function DayViewEvent({ item, isEnd, index, setData }) {
         {description.length > 0 && (
           <Text style={Style.description}>{description}</Text>
         )}
-        <ImageCollage images={images} />
+        {/*<ImageCollage images={images} />*/}
         <Text style={Style.date}>{format(new Date(time), 'do LLL, yyyy')}</Text>
       </View>
       <Ripple
